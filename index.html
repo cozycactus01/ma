@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>신나는 자기이해</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --ivory:    #F7F2EA;
+      --cream:    #EEE6D8;
+      --beige:    #DDD0BC;
+      --beige-dk: #C4B09A;
+      --wood:     #A8845C;
+      --floor1:   #C9BA9B;
+      --floor2:   #B8A882;
+      --brown:    #6B5444;
+      --brown-md: #9B8572;
+      --brown-lt: #BBA992;
+      --accent:   #C4865A;
+      --acc-hov:  #A86E44;
+      --green:    #8BAA76;
+      --white:    #FBF8F3;
+      --shadow:   rgba(100,80,60,0.15);
+    }
+
+    body {
+      font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', sans-serif;
+      background: #D8D0C4;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    #app {
+      width: 100%; max-width: 430px; min-height: 100vh;
+      background: var(--ivory); position: relative; overflow-x: hidden;
+    }
+    @media(min-width:430px) { #app { box-shadow: 0 0 60px rgba(0,0,0,0.18); } }
+
+    .screen { width: 100%; display: flex; flex-direction: column; }
+    .hidden { display: none !important; }
+
+    /* ── NAME SETUP ── */
+    #screen-name {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #F7F2EA 0%, #EEE6D8 100%);
+      justify-content: center; align-items: center; padding: 40px 28px; gap: 28px;
+    }
+    .name-logo    { font-size: 30px; font-weight: 700; color: var(--accent); letter-spacing: -1px; text-align: center; }
+    .name-welcome { font-size: 15px; color: var(--brown-md); text-align: center; line-height: 1.75; }
+    .name-card {
+      background: var(--white); border-radius: 24px; padding: 28px 24px;
+      box-shadow: 0 4px 28px var(--shadow); width: 100%;
+    }
+    .name-card label { display: block; font-size: 14px; font-weight: 600; color: var(--brown); margin-bottom: 10px; }
+    .name-input {
+      width: 100%; background: var(--cream); border: 2px solid var(--beige);
+      border-radius: 14px; padding: 14px 16px; font-size: 16px;
+      color: var(--brown); font-family: inherit; outline: none; transition: border-color .2s;
+    }
+    .name-input:focus { border-color: var(--accent); }
+    .name-input::placeholder { color: var(--brown-lt); }
+
+    /* ── EMOTION CHECK-IN ── */
+    #screen-emotion {
+      min-height: 100vh;
+      background: linear-gradient(160deg, #F7F2EA 0%, #EEE6D8 100%);
+      justify-content: center; align-items: center; padding: 36px 28px; gap: 24px;
+    }
+    .emo-header { text-align: center; }
+    .emo-title { font-size: 30px; font-weight: 700; color: var(--accent); letter-spacing: -1px; }
+    .emo-date  { font-size: 13px; color: var(--brown-md); margin-top: 6px; }
+    .emo-card {
+      background: var(--white); border-radius: 24px; padding: 28px 20px;
+      box-shadow: 0 4px 28px var(--shadow); width: 100%;
+    }
+    .emo-card h2 { font-size: 18px; font-weight: 500; color: var(--brown); text-align: center; line-height: 1.6; margin-bottom: 22px; }
+    .emo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
+    .emo-btn { background: var(--cream); border: 2px solid var(--beige); border-radius: 14px; padding: 12px 6px; cursor: pointer; text-align: center; transition: all .2s; }
+    .emo-btn:hover  { background: var(--ivory); border-color: var(--accent); transform: translateY(-2px); }
+    .emo-btn.sel    { background: #FDF0E6; border-color: var(--accent); box-shadow: 0 2px 12px rgba(196,134,90,.2); }
+    .emo-btn .ico   { font-size: 26px; display: block; margin-bottom: 4px; }
+    .emo-btn .lbl   { font-size: 12px; font-weight: 500; color: var(--brown); }
+    .enter-btn {
+      width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 18px;
+      padding: 15px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit;
+      transition: all .2s; letter-spacing: -.5px;
+    }
+    .enter-btn:hover:not(:disabled) { background: var(--acc-hov); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(196,134,90,.3); }
+    .enter-btn:disabled { background: var(--beige-dk); cursor: not-allowed; }
+
+    /* ── ROOM SCREEN ── */
+    #screen-room { min-height: 100vh; }
+    .room-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--ivory); }
+    .room-logo { font-size: 20px; font-weight: 700; color: var(--accent); }
+    .lv-badge { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--brown); font-weight: 500; }
+    .xp-wrap { padding: 6px 20px 10px; background: var(--ivory); }
+    .xp-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--brown-md); margin-bottom: 4px; }
+    .xp-track { height: 6px; background: var(--cream); border-radius: 10px; overflow: hidden; }
+    .xp-fill  { height: 100%; background: linear-gradient(90deg, var(--accent), #E8B080); border-radius: 10px; transition: width .6s ease; }
+
+    /* ROOM SCENE */
+    .room-scene { position: relative; width: 100%; height: 340px; overflow: hidden; flex-shrink: 0; }
+
+    /* Wall */
+    .r-wall { position: absolute; top: 0; left: 0; right: 0; height: 62%; transition: background .6s; }
+    .r-wall::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(180,160,140,.15) 1px, transparent 1px); background-size: 22px 22px; }
+    .wall-0 { background: linear-gradient(175deg, #EDE7DC 0%, #E2DAD0 100%); }
+    .wall-1 { background: linear-gradient(175deg, #D5E8D0 0%, #C8DFBE 100%); }
+    .wall-2 { background: linear-gradient(175deg, #E4D8F5 0%, #D8CCF0 100%); }
+
+    /* Light variants — tint overlay on room-scene */
+    #room-scene.light-1::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(255,170,50,.07); }
+    #room-scene.light-2::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(100,130,220,.09); }
+    .light-0 .win-light { background: radial-gradient(ellipse at top left, rgba(255,240,200,.35) 0%, transparent 65%); }
+    .light-1 .win-light { background: radial-gradient(ellipse at top left, rgba(255,180,60,.52) 0%, transparent 65%); }
+    .light-2 .win-light { background: radial-gradient(ellipse at top left, rgba(140,175,255,.42) 0%, transparent 60%); }
+
+    /* Floor */
+    .r-floor { position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: repeating-linear-gradient(90deg, var(--floor1) 0px, var(--floor1) 59px, var(--floor2) 59px, var(--floor2) 60px); }
+    .r-floor::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 18px; background: linear-gradient(180deg, rgba(0,0,0,.08), transparent); }
+    .r-base { position: absolute; left: 0; right: 0; height: 10px; background: var(--wood); top: calc(62% - 5px); z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,.12); }
+
+    /* Window */
+    .r-window { position: absolute; top: 22px; left: 26px; width: 96px; height: 84px; z-index: 3; }
+    .win-frame { width: 100%; height: 100%; background: linear-gradient(135deg, #D4EEF8 0%, #AAC8DC 60%, #D0EAF4 100%); border: 6px solid #C0A880; border-radius: 8px; position: relative; box-shadow: inset 0 0 18px rgba(150,200,230,.4), 0 0 28px rgba(150,200,230,.25); transition: background .6s; }
+    .win-frame::before { content: ''; position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; background: #C0A880; transform: translateX(-50%); }
+    .win-frame::after  { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 4px; background: #C0A880; transform: translateY(-50%); }
+    .win-light { position: absolute; top: 22px; left: 122px; width: 170px; height: 130px; pointer-events: none; z-index: 1; transition: background .6s; background: radial-gradient(ellipse at top left, rgba(255,240,200,.35) 0%, transparent 65%); }
+
+    /* Bookshelf */
+    .r-shelf { position: absolute; top: 16px; right: 18px; width: 92px; height: 108px; z-index: 3; }
+    .shelf-body { width: 100%; height: 100%; background: #B08858; border-radius: 6px 6px 4px 4px; box-shadow: 2px 3px 10px rgba(0,0,0,.18); position: relative; overflow: hidden; }
+    .shelf-plank { position: absolute; left: 0; right: 0; height: 7px; background: #8A6438; }
+    .shelf-plank:nth-child(1) { top: 33%; }
+    .shelf-plank:nth-child(2) { top: 66%; }
+    .shelf-books { position: absolute; inset: 0; padding: 4px 6px; display: flex; flex-direction: column; justify-content: space-around; }
+    .brow { display: flex; align-items: flex-end; gap: 3px; height: 22px; }
+    .bk   { border-radius: 2px 2px 0 0; }
+
+    /* Table */
+    .r-table { position: absolute; bottom: 40%; left: 18px; z-index: 4; }
+    .tbl-top { width: 72px; height: 10px; background: #B08858; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,.15); }
+    .tbl-legs { display: flex; justify-content: space-between; padding: 0 7px; }
+    .tbl-leg  { width: 6px; height: 26px; background: #9A7040; }
+    .tbl-cup  { width: 18px; height: 22px; background: #E8C8A0; border-radius: 3px 3px 5px 5px; position: absolute; top: -22px; left: 10px; }
+    .tbl-cup::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: rgba(180,130,80,.45); border-radius: 3px 3px 0 0; }
+    .tbl-saucer { width: 24px; height: 5px; background: #D8B888; border-radius: 50%; position: absolute; top: -5px; left: 7px; }
+
+    /* Plant */
+    .r-plant { position: absolute; bottom: 40%; right: 24px; z-index: 4; }
+    .plant-leaves { display: flex; justify-content: center; align-items: flex-end; margin-bottom: -2px; }
+    .leaf { width: 20px; height: 30px; background: var(--green); border-radius: 50% 50% 50% 0; transform-origin: bottom center; }
+    .leaf:nth-child(1) { transform: rotate(-35deg) translateX(5px); background: #7A9A68; }
+    .leaf:nth-child(2) { transform: rotate(15deg) scale(1.15); background: var(--green); }
+    .leaf:nth-child(3) { transform: rotate(50deg) translateX(-4px); background: #9DC882; }
+    .plant-pot { width: 34px; height: 26px; background: var(--accent); border-radius: 4px 4px 8px 8px; position: relative; margin: 0 auto; }
+    .plant-pot::before { content: ''; position: absolute; top: -4px; left: -5px; right: -5px; height: 7px; background: #A86E44; border-radius: 4px; }
+
+    /* Rug */
+    .r-rug { position: absolute; bottom: 20%; left: 50%; transform: translateX(-50%); width: 155px; height: 58px; background: radial-gradient(ellipse, #D4BFA0 60%, #C4AE8C 100%); border-radius: 50%; border: 5px solid #C0A87C; box-shadow: 0 3px 10px rgba(0,0,0,.1); z-index: 3; }
+    .r-rug::before { content: ''; position: absolute; inset: 6px; border: 2px dashed rgba(180,150,110,.5); border-radius: 50%; }
+
+    /* Character */
+    .r-char { position: absolute; bottom: 38%; left: 50%; transform: translateX(-50%); z-index: 6; text-align: center; }
+    .char-body { width: 90px; height: 90px; animation: charFloat 3.2s ease-in-out infinite; position: relative; }
+    .char-blob { width: 100%; height: 100%; border-radius: 60% 40% 55% 45% / 50% 55% 45% 55%; animation: morphBlob 4s ease-in-out infinite; transition: filter 1.2s ease, background 1.2s ease, box-shadow .8s ease; position: relative; overflow: hidden; }
+    .char-blob::after { content: ''; position: absolute; top: 12%; left: 18%; width: 28%; height: 22%; background: rgba(255,255,255,.32); border-radius: 50%; transform: rotate(-30deg); }
+    .lv1 .char-blob { background: radial-gradient(circle at 40% 40%, #D0CBCA, #A8A0A8); filter: blur(9px) saturate(0.2) brightness(0.95); }
+    .lv2 .char-blob { background: radial-gradient(circle at 40% 40%, #D8CBBA, #B8A8C0); filter: blur(6px) saturate(0.4); }
+    .lv3 .char-blob { background: radial-gradient(circle at 40% 40%, #DED5A8, #C0A8D8); filter: blur(4px) saturate(0.6); }
+    .lv4 .char-blob { background: radial-gradient(circle at 40% 40%, #E8D880, #D8A8E0); filter: blur(2.5px) saturate(0.75); }
+    .lv5 .char-blob { background: radial-gradient(circle at 40% 40%, #F5E060, #EE88D0); filter: blur(1px) saturate(0.88); }
+    .lv6 .char-blob { background: radial-gradient(circle at 40% 40%, #FFD840, #FF80BC); filter: saturate(1.0); }
+    .lv7 .char-blob { background: radial-gradient(circle at 40% 40%, #FFCC30, #FF68A8); filter: saturate(1.2) brightness(1.05); }
+    .lv8 .char-blob { background: radial-gradient(circle at 40% 40%, #FFB828, #FF5898); filter: saturate(1.5) brightness(1.08); box-shadow: 0 0 32px rgba(255,150,80,.45); }
+    .char-name { font-size: 11px; color: var(--brown-md); font-weight: 500; margin-top: 6px; }
+
+    @keyframes charFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    @keyframes morphBlob {
+      0%,100% { border-radius: 60% 40% 55% 45% / 50% 55% 45% 55%; }
+      33%     { border-radius: 42% 58% 62% 38% / 60% 42% 52% 48%; }
+      66%     { border-radius: 50% 50% 42% 58% / 44% 62% 48% 52%; }
+    }
+
+    /* Props */
+    .r-prop { position: absolute; z-index: 5; }
+    .prop-wreath { top: 118px; left: 50%; transform: translateX(-50%); font-size: 17px; letter-spacing: 3px; background: rgba(255,248,240,.75); border: 1.5px solid rgba(200,170,140,.45); border-radius: 30px; padding: 5px 14px; }
+    .prop-mobile { top: 0px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
+    .mobile-bar { width: 100px; height: 4px; background: var(--beige-dk); border-radius: 2px; }
+    .mobile-stars { display: flex; gap: 18px; padding-top: 8px; }
+    .mobile-stars span { font-size: 17px; display: inline-block; animation: starSwing 2.4s ease-in-out infinite; transform-origin: top center; }
+    @keyframes starSwing { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+
+    /* Dust */
+    .dust-layer { position: absolute; inset: 0; pointer-events: none; z-index: 9; display: none; }
+    .dust-layer.on { display: block; }
+    .dp { position: absolute; border-radius: 50%; background: rgba(160,140,118,.38); animation: dpFloat linear infinite; }
+    @keyframes dpFloat { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: .9; } 85% { opacity: .5; } 100% { transform: translateY(-70px) rotate(200deg); opacity: 0; } }
+    .dust-msg { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); background: rgba(251,248,243,.94); border-radius: 16px; padding: 14px 20px; text-align: center; font-size: 13px; color: var(--brown); box-shadow: 0 4px 20px var(--shadow); z-index: 10; display: none; white-space: nowrap; }
+    .dust-msg.on { display: block; }
+    .dust-msg small { display: block; color: var(--brown-md); margin-top: 3px; font-size: 11px; }
+
+    /* Stage bar & buttons */
+    .stage-bar { padding: 10px 20px; background: var(--cream); border-top: 1px solid var(--beige); border-bottom: 1px solid var(--beige); }
+    .stage-nm   { font-size: 13px; font-weight: 600; color: var(--brown); }
+    .stage-desc { font-size: 11px; color: var(--brown-md); margin-top: 2px; line-height: 1.5; }
+    .room-btns { display: flex; gap: 10px; padding: 14px 18px; }
+    .act-btn { flex: 1; padding: 13px 8px; border: none; border-radius: 16px; cursor: pointer; font-size: 12px; font-weight: 600; font-family: inherit; transition: all .2s; display: flex; flex-direction: column; align-items: center; gap: 5px; }
+    .act-btn .ico { font-size: 22px; }
+    .btn-feed  { background: var(--accent); color: #fff; box-shadow: 0 4px 14px rgba(196,134,90,.28); }
+    .btn-feed:hover  { background: var(--acc-hov); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(196,134,90,.38); }
+    .btn-decor, .btn-diary { background: var(--white); color: var(--brown); border: 2px solid var(--beige); }
+    .btn-decor:hover, .btn-diary:hover { background: var(--cream); transform: translateY(-2px); }
+
+    /* Feed history */
+    .feed-hist { padding: 10px 20px 24px; }
+    .feed-hist h3 { font-size: 13px; font-weight: 600; color: var(--brown); margin-bottom: 9px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chip { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--brown); }
+    .chip-empty { color: var(--brown-lt); }
+
+    /* ── MODALS (base) ── */
+    .overlay { position: fixed; inset: 0; background: rgba(70,54,40,.48); display: flex; justify-content: center; align-items: flex-end; z-index: 100; backdrop-filter: blur(2px); }
+    .sheet { background: var(--white); border-radius: 28px 28px 0 0; padding: 20px 22px 44px; width: 100%; max-width: 430px; max-height: 86vh; overflow-y: auto; animation: slideUp .28s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    .handle { width: 38px; height: 4px; background: var(--beige-dk); border-radius: 2px; margin: 0 auto 18px; }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--brown); margin-bottom: 4px; }
+    .modal-sub   { font-size: 12px; color: var(--brown-md); margin-bottom: 18px; }
+    .ok-btn { width: 100%; background: var(--accent); color: #fff; border: none; border-radius: 15px; padding: 14px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
+    .ok-btn:hover:not(:disabled) { background: var(--acc-hov); }
+    .ok-btn:disabled { background: var(--beige-dk); cursor: not-allowed; }
+
+    /* Feed modal */
+    .feed-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; margin-bottom: 18px; }
+    .feed-emo { background: var(--cream); border: 2px solid var(--beige); border-radius: 14px; padding: 12px 6px; cursor: pointer; text-align: center; transition: all .2s; }
+    .feed-emo:hover, .feed-emo.sel { background: #FDF0E6; border-color: var(--accent); }
+    .feed-emo .ico { font-size: 22px; display: block; margin-bottom: 3px; }
+    .feed-emo .lbl { font-size: 11px; color: var(--brown); font-weight: 500; }
+
+    /* Event modal */
+    .ev-scenario { background: var(--cream); border-radius: 15px; padding: 15px; font-size: 13px; line-height: 1.75; color: var(--brown); margin-bottom: 14px; }
+    .ev-choices { display: flex; flex-direction: column; gap: 7px; margin-bottom: 14px; }
+    .ch-btn { background: var(--cream); border: 2px solid var(--beige); border-radius: 13px; padding: 13px 15px; font-size: 13px; color: var(--brown); cursor: pointer; text-align: left; font-family: inherit; transition: all .2s; line-height: 1.5; }
+    .ch-btn:hover, .ch-btn.sel { background: #FDF0E6; border-color: var(--accent); }
+    .custom-lbl { font-size: 12px; color: var(--brown-md); margin-bottom: 5px; display: block; }
+    .custom-ta { width: 100%; background: var(--cream); border: 2px solid var(--beige); border-radius: 13px; padding: 11px 14px; font-size: 13px; color: var(--brown); font-family: inherit; resize: none; outline: none; transition: border-color .2s; margin-bottom: 14px; }
+    .custom-ta:focus { border-color: var(--accent); }
+
+    /* Decor modal */
+    .decor-section { margin-bottom: 22px; }
+    .decor-section-title { font-size: 13px; font-weight: 600; color: var(--brown); margin-bottom: 10px; }
+    .decor-opts { display: flex; gap: 8px; }
+    .decor-opt { flex: 1; padding: 12px 6px; text-align: center; background: var(--cream); border: 2px solid var(--beige); border-radius: 14px; cursor: pointer; transition: all .2s; }
+    .decor-opt:hover:not(.locked) { border-color: var(--accent); background: #FDF0E6; }
+    .decor-opt.sel   { background: #FDF0E6; border-color: var(--accent); }
+    .decor-opt.locked { opacity: .55; cursor: not-allowed; }
+    .d-ico  { font-size: 22px; display: block; margin-bottom: 4px; }
+    .d-name { font-size: 11px; color: var(--brown); font-weight: 500; display: block; }
+    .d-req  { font-size: 10px; color: var(--brown-md); margin-top: 3px; display: block; }
+    .decor-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .cancel-btn { flex: 1; background: var(--cream); color: var(--brown); border: 2px solid var(--beige); border-radius: 15px; padding: 13px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s; }
+    .cancel-btn:hover { background: var(--beige); }
+
+    /* Diary modal */
+    .diary-empty { text-align: center; color: var(--brown-md); font-size: 13px; line-height: 1.8; padding: 40px 20px; }
+    .diary-entry { background: var(--cream); border-radius: 16px; padding: 14px 16px; margin-bottom: 12px; }
+    .diary-date  { font-size: 12px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+    .diary-item  { font-size: 13px; color: var(--brown); line-height: 1.6; margin-bottom: 5px; }
+    .diary-event { background: var(--white); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
+    .diary-event-title  { font-size: 12px; font-weight: 600; color: var(--brown); }
+    .diary-event-choice { font-size: 12px; color: var(--brown-md); margin-top: 3px; font-style: italic; }
+
+    /* Toast & XP pop */
+    .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(70,54,40,.9); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all .3s; z-index: 200; white-space: nowrap; pointer-events: none; }
+    .toast.on { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .xp-pop { position: absolute; font-size: 13px; font-weight: 700; color: var(--accent); pointer-events: none; animation: xpUp 1.4s ease forwards; z-index: 20; left: 50%; transform: translateX(-50%); }
+    @keyframes xpUp { 0% { transform: translateX(-50%) translateY(0); opacity: 1; } 100% { transform: translateX(-50%) translateY(-55px); opacity: 0; } }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--beige-dk); border-radius: 2px; }
+
+    /* ── MINI-GAMES ── */
+    .btn-mini { background: var(--white); color: var(--brown); border: 2px solid var(--beige); }
+    .btn-mini:hover { background: var(--cream); transform: translateY(-2px); }
+    .mini-cards { display: flex; gap: 12px; margin-bottom: 4px; }
+    .mini-card { flex:1; background: var(--cream); border: 2px solid var(--beige); border-radius: 18px; padding: 22px 10px; text-align: center; cursor: pointer; transition: all .2s; }
+    .mini-card:hover { border-color: var(--accent); background: #FDF0E6; transform: translateY(-2px); }
+    .mini-card-ico   { font-size: 34px; margin-bottom: 8px; }
+    .mini-card-title { font-size: 13px; font-weight: 600; color: var(--brown); margin-bottom: 6px; }
+    .mini-card-desc  { font-size: 11px; color: var(--brown-md); line-height: 1.6; }
+    /* Balloon */
+    .balloon-area   { margin: 16px auto 0; display: flex; flex-direction: column; align-items: center; }
+    .balloon-body   { width: 80px; height: 96px; background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.62) 0%, transparent 46%), radial-gradient(circle at 45% 45%, #FFB8A0, #FF7055); border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; }
+    .balloon-string { width: 2px; height: 28px; background: var(--beige-dk); margin: 0 auto; border-radius: 1px; }
+    .balloon-rounds { font-size: 14px; color: var(--brown-md); margin: 14px 0 4px; font-weight: 500; text-align: center; }
+    .balloon-hint   { font-size: 13px; color: var(--brown-md); margin-bottom: 18px; text-align: center; min-height: 20px; }
+    .balloon-btn    { background: var(--accent); color: #fff; border: none; border-radius: 50px; padding: 17px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; width: 100%; margin-bottom: 10px; }
+    .balloon-btn:active { opacity: .85; }
+    /* Sort */
+    .sort-top    { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .sort-side   { font-size: 11px; color: var(--brown-md); text-align: center; line-height: 1.6; width: 60px; }
+    .sort-count  { font-size: 14px; font-weight: 600; color: var(--brown); }
+    .sort-area   { position: relative; height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 8px; }
+    .sort-card   { width: 205px; height: 125px; background: var(--white); border-radius: 20px; box-shadow: 0 6px 22px rgba(0,0,0,.12); display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 700; color: var(--brown); position: absolute; user-select: none; -webkit-user-select: none; touch-action: none; cursor: grab; }
+    .sort-card.grabbing { cursor: grabbing; box-shadow: 0 12px 30px rgba(0,0,0,.18); }
+    .sort-hint   { text-align: center; font-size: 11px; color: var(--brown-lt); margin-bottom: 14px; }
+    .sort-result { margin-top: 6px; }
+    .sort-rs     { margin-bottom: 13px; }
+    .sort-rs-ttl { font-size: 13px; font-weight: 600; color: var(--brown); margin-bottom: 7px; }
+    .sort-chips  { display: flex; flex-wrap: wrap; gap: 6px; }
+    .sort-chip   { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 16px; padding: 4px 12px; font-size: 12px; color: var(--brown); }
+  </style>
+</head>
+<body>
+<div id="app">
+
+  <!-- NAME SETUP (first launch only) -->
+  <div id="screen-name" class="screen hidden">
+    <div class="name-logo">신나는 자기이해</div>
+    <div class="name-welcome">처음 오셨군요, 반가워요 🌱<br>함께 성장할 캐릭터의 이름을 지어주세요</div>
+    <div class="name-card">
+      <label for="name-input">캐릭터 이름 (최대 8자)</label>
+      <input class="name-input" id="name-input" type="text" maxlength="8"
+             placeholder="이름을 입력해주세요" oninput="onNameInput()">
+    </div>
+    <button class="enter-btn" id="name-btn" disabled onclick="confirmName()">시작하기 →</button>
+  </div>
+
+  <!-- EMOTION CHECK-IN -->
+  <div id="screen-emotion" class="screen">
+    <div class="emo-header">
+      <div class="emo-title">신나는 자기이해</div>
+      <div class="emo-date" id="emo-date"></div>
+    </div>
+    <div class="emo-card">
+      <h2>오늘 마음은<br>어떤 빛깔인가요? 🌤</h2>
+      <div class="emo-grid" id="emo-grid"></div>
+    </div>
+    <button class="enter-btn" id="enter-btn" disabled>방으로 들어가기 →</button>
+  </div>
+
+  <!-- MAIN ROOM -->
+  <div id="screen-room" class="screen hidden">
+    <div class="room-header">
+      <div class="room-logo">신나는 자기이해</div>
+      <div class="lv-badge" id="lv-badge">Lv.1 씨앗</div>
+    </div>
+    <div class="xp-wrap">
+      <div class="xp-meta">
+        <span id="xp-stage">1단계 · 신뢰의 씨앗</span>
+        <span id="xp-txt">0 / 30 XP</span>
+      </div>
+      <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    </div>
+
+    <div class="room-scene light-0" id="room-scene">
+      <div class="r-wall wall-0" id="r-wall"></div>
+      <div class="r-floor"></div>
+      <div class="r-base"></div>
+      <div class="r-window"><div class="win-frame"></div></div>
+      <div class="win-light" id="win-light"></div>
+      <div class="r-shelf">
+        <div class="shelf-body">
+          <div class="shelf-plank"></div><div class="shelf-plank"></div>
+          <div class="shelf-books">
+            <div class="brow">
+              <div class="bk" style="width:9px;height:100%;background:#D47A6A"></div>
+              <div class="bk" style="width:7px;height:100%;background:#6A8AD4"></div>
+              <div class="bk" style="width:11px;height:100%;background:#8ABD6A"></div>
+              <div class="bk" style="width:8px;height:100%;background:#D4A86A"></div>
+            </div>
+            <div class="brow">
+              <div class="bk" style="width:10px;height:100%;background:#A87AD4"></div>
+              <div class="bk" style="width:13px;height:100%;background:#D4C86A"></div>
+              <div class="bk" style="width:8px;height:100%;background:#6AC4D4"></div>
+            </div>
+            <div class="brow">
+              <div class="bk" style="width:11px;height:100%;background:#D46A8A"></div>
+              <div class="bk" style="width:8px;height:100%;background:#8AB07A"></div>
+              <div class="bk" style="width:10px;height:100%;background:#D4A05A"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="r-table">
+        <div style="position:relative">
+          <div class="tbl-saucer"></div><div class="tbl-cup"></div>
+          <div class="tbl-top"></div>
+          <div class="tbl-legs"><div class="tbl-leg"></div><div class="tbl-leg"></div></div>
+        </div>
+      </div>
+      <div class="r-plant">
+        <div class="plant-leaves"><div class="leaf"></div><div class="leaf"></div><div class="leaf"></div></div>
+        <div class="plant-pot"></div>
+      </div>
+      <div class="r-rug"></div>
+      <div class="r-prop hidden" id="room-prop"></div>
+      <div class="r-char" id="r-char">
+        <div class="char-body lv1" id="char-body">
+          <div class="char-blob" id="char-blob"></div>
+        </div>
+        <div class="char-name" id="char-name">나다움</div>
+      </div>
+      <div class="dust-layer" id="dust-layer"></div>
+      <div class="dust-msg" id="dust-msg">🌫️ 오랫동안 오지 않았어요<small>방에 먼지가 살짝 쌓였네요...</small></div>
+    </div>
+
+    <div class="stage-bar">
+      <div class="stage-nm"  id="stage-nm">신뢰의 씨앗 🌱</div>
+      <div class="stage-desc" id="stage-desc">처음 세상과 만나는 시간. 따뜻한 감정이 신뢰를 키워요.</div>
+    </div>
+    <div class="room-btns">
+      <button class="act-btn btn-feed"  onclick="openFeed()"><span class="ico">🫧</span>감정 먹이주기</button>
+      <button class="act-btn btn-decor" onclick="openDecor()"><span class="ico">🪴</span>방 꾸미기</button>
+      <button class="act-btn btn-diary" onclick="openDiary()"><span class="ico">📖</span>감정 일기</button>
+      <button class="act-btn btn-mini"  onclick="openMini()"><span class="ico">🎮</span>미니게임</button>
+    </div>
+    <div class="feed-hist">
+      <h3>최근에 먹인 감정들</h3>
+      <div class="chips" id="chips"><div class="chip chip-empty">아직 감정을 먹이지 않았어요</div></div>
+    </div>
+  </div>
+</div><!-- /app -->
+
+<!-- FEED MODAL -->
+<div class="overlay hidden" id="modal-feed" onclick="bgClose(event,'modal-feed')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">감정 먹이주기 🫧</div>
+    <div class="modal-sub">지금 마음에 가장 가까운 감정을 골라주세요</div>
+    <div class="feed-grid" id="feed-grid"></div>
+    <button class="ok-btn" id="feed-ok" disabled onclick="confirmFeed()">먹이기</button>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="overlay hidden" id="modal-event" onclick="bgClose(event,'modal-event')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title" id="ev-title">오늘의 이야기 ✨</div>
+    <div class="modal-sub"  id="ev-sub"></div>
+    <div class="ev-scenario" id="ev-scene"></div>
+    <div class="ev-choices"  id="ev-choices"></div>
+    <label class="custom-lbl">💭 직접 이야기해보세요 (선택)</label>
+    <textarea class="custom-ta" id="custom-ta" rows="3" placeholder="나만의 생각을 적어보세요..."></textarea>
+    <button class="ok-btn" onclick="confirmEvent()">마음 전하기</button>
+  </div>
+</div>
+
+<!-- DECOR MODAL -->
+<div class="overlay hidden" id="modal-decor" onclick="bgClose(event,'modal-decor')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">방 꾸미기 🪴</div>
+    <div class="modal-sub">나만의 방을 꾸며보세요 · XP로 해금돼요</div>
+    <div class="decor-section">
+      <div class="decor-section-title">🎨 벽지</div>
+      <div class="decor-opts" id="decor-wall"></div>
+    </div>
+    <div class="decor-section">
+      <div class="decor-section-title">💡 조명</div>
+      <div class="decor-opts" id="decor-light"></div>
+    </div>
+    <div class="decor-section">
+      <div class="decor-section-title">🪄 소품</div>
+      <div class="decor-opts" id="decor-prop"></div>
+    </div>
+    <div class="decor-btns">
+      <button class="cancel-btn" onclick="document.getElementById('modal-decor').classList.add('hidden')">취소</button>
+      <button class="ok-btn" style="flex:2" onclick="confirmDecor()">적용하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIARY MODAL -->
+<div class="overlay hidden" id="modal-diary" onclick="bgClose(event,'modal-diary')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">감정 일기 📖</div>
+    <div class="modal-sub">나다움과 함께한 날들의 기록이에요</div>
+    <div id="diary-list"></div>
+  </div>
+</div>
+
+<!-- MINI-GAME SELECT -->
+<div class="overlay hidden" id="modal-mini" onclick="bgClose(event,'modal-mini')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">미니게임 🎮</div>
+    <div class="modal-sub">지금 기분에 맞는 게임을 골라보세요</div>
+    <div class="mini-cards">
+      <div class="mini-card" onclick="openBalloon()">
+        <div class="mini-card-ico">🎈</div>
+        <div class="mini-card-title">마음 풍선 불기</div>
+        <div class="mini-card-desc">버튼을 꾹 눌러<br>호흡을 맞춰봐요<br><strong>3회 완료 +10 XP</strong></div>
+      </div>
+      <div class="mini-card" onclick="openSort()">
+        <div class="mini-card-ico">♻️</div>
+        <div class="mini-card-title">생각 분리수거</div>
+        <div class="mini-card-desc">감정 카드를<br>스와이프로 분류해요<br><strong>완료 시 +12 XP</strong></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BALLOON GAME -->
+<div class="overlay hidden" id="modal-balloon">
+  <div class="sheet" style="text-align:center">
+    <div class="handle"></div>
+    <div class="modal-title">마음 풍선 불기 🎈</div>
+    <div class="modal-sub">천천히 호흡을 맞춰봐요</div>
+    <div class="balloon-area">
+      <div class="balloon-body" id="balloon-body"></div>
+      <div class="balloon-string"></div>
+    </div>
+    <div class="balloon-rounds" id="balloon-rounds">0 / 3 완료</div>
+    <div class="balloon-hint"  id="balloon-hint">버튼을 꾹 누르면 풍선이 부풀어요 💨</div>
+    <button class="balloon-btn" id="balloon-btn"
+      onmousedown="balloonPress(event)" onmouseup="balloonRelease(event)" onmouseleave="balloonRelease(event)"
+      ontouchstart="balloonPress(event)" ontouchend="balloonRelease(event)">꾹 누르기</button>
+    <button class="cancel-btn" onclick="closeBalloon()">나가기</button>
+  </div>
+</div>
+
+<!-- SORT GAME -->
+<div class="overlay hidden" id="modal-sort">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">생각 분리수거 ♻️</div>
+    <div class="modal-sub">스와이프로 감정 카드를 분류해봐요</div>
+    <div class="sort-top">
+      <div class="sort-side">👈<br>내려놓기</div>
+      <div class="sort-count" id="sort-count">1 / 10</div>
+      <div class="sort-side">지금의 나<br>👉</div>
+    </div>
+    <div class="sort-area" id="sort-area">
+      <div class="sort-card" id="sort-card"></div>
+    </div>
+    <div class="sort-hint" id="sort-hint-txt">← 스와이프로 분류해보세요 →</div>
+    <div class="sort-result hidden" id="sort-result">
+      <div class="sort-rs">
+        <div class="sort-rs-ttl">👈 내려놓기</div>
+        <div class="sort-chips" id="sort-left-chips"></div>
+      </div>
+      <div class="sort-rs">
+        <div class="sort-rs-ttl">👉 지금의 나</div>
+        <div class="sort-chips" id="sort-right-chips"></div>
+      </div>
+      <button class="ok-btn" onclick="closeSortDone()">확인 · +12 XP</button>
+    </div>
+    <button class="cancel-btn" style="margin-top:10px" onclick="closeSort()">나가기</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ══════════════════════════════════
+   DATA
+══════════════════════════════════ */
+const EMOTIONS = [
+  { id:'happy',    ico:'😊', lbl:'행복해',   w:1,c:0,i:1,g:0,d:1,s:0,cl:1,df:0 },
+  { id:'calm',     ico:'😌', lbl:'평온해',   w:0,c:1,i:0,g:1,d:0,s:1,cl:1,df:0 },
+  { id:'sad',      ico:'😢', lbl:'슬퍼',     w:0,c:1,i:0,g:1,d:0,s:1,cl:0,df:1 },
+  { id:'excited',  ico:'🥰', lbl:'설레',     w:1,c:0,i:1,g:0,d:1,s:0,cl:1,df:0 },
+  { id:'anxious',  ico:'😰', lbl:'불안해',   w:0,c:1,i:1,g:0,d:1,s:0,cl:0,df:1 },
+  { id:'angry',    ico:'😤', lbl:'화나',     w:1,c:0,i:1,g:0,d:1,s:0,cl:1,df:0 },
+  { id:'lonely',   ico:'🥺', lbl:'외로워',   w:0,c:1,i:0,g:1,d:0,s:1,cl:0,df:1 },
+  { id:'grateful', ico:'🙏', lbl:'감사해',   w:1,c:0,i:0,g:1,d:0,s:1,cl:1,df:0 },
+  { id:'tired',    ico:'😫', lbl:'피곤해',   w:0,c:1,i:0,g:1,d:0,s:1,cl:0,df:1 },
+  { id:'flutter',  ico:'💓', lbl:'두근두근', w:1,c:0,i:1,g:0,d:1,s:0,cl:0,df:1 },
+  { id:'proud',    ico:'🌟', lbl:'뿌듯해',   w:1,c:0,i:0,g:1,d:0,s:1,cl:1,df:0 },
+  { id:'wonder',   ico:'🤩', lbl:'신기해',   w:1,c:0,i:1,g:0,d:1,s:0,cl:1,df:0 },
+];
+
+const STAGES = [
+  { lv:1, name:'씨앗',   label:'신뢰의 씨앗',    icon:'🌱', desc:'처음 세상과 만나는 시간. 따뜻한 감정이 신뢰를 키워요.',     need:30  },
+  { lv:2, name:'새싹',   label:'자라나는 새싹',   icon:'🌿', desc:'스스로 움직여보는 단계예요. 어떤 감정이든 괜찮아요.',       need:70  },
+  { lv:3, name:'봉오리', label:'피어나는 봉오리', icon:'🌸', desc:'나만의 방향을 찾아가는 시간이에요.',                         need:130 },
+  { lv:4, name:'꽃잎',   label:'열리는 꽃잎',     icon:'🌺', desc:'꾸준함이 아름다운 변화를 만들어요.',                        need:210 },
+  { lv:5, name:'꽃',     label:'피어난 꽃',       icon:'🌼', desc:'"나는 누구인가"를 천천히 느끼기 시작해요.',                 need:310 },
+  { lv:6, name:'열매',   label:'익어가는 열매',   icon:'🍑', desc:'깊은 연결의 소중함을 알아가는 시간이에요.',                 need:430 },
+  { lv:7, name:'나무',   label:'든든한 나무',     icon:'🌳', desc:'무언가를 만들고 나누고 싶어지는 단계예요.',                 need:580 },
+  { lv:8, name:'빛',     label:'온전한 빛',        icon:'✨', desc:'모든 감정이 하나로 모여 당신만의 빛이 됩니다.',             need:9999},
+];
+
+const TYPES = {
+  warm_intense_dynamic_clear:   { name:'따스한 새벽빛', c1:'#FFB830', c2:'#FF6A48', glow:'rgba(255,150,60,.45)' },
+  warm_intense_dynamic_diffuse: { name:'노을빛 안개',   c1:'#FFA040', c2:'#E04878', glow:'rgba(255,110,80,.4)' },
+  warm_intense_still_clear:     { name:'황금빛 고요',   c1:'#FFD040', c2:'#C85C3A', glow:'rgba(255,195,55,.4)' },
+  warm_intense_still_diffuse:   { name:'불꽃 잔향',     c1:'#FFC060', c2:'#D06858', glow:'rgba(255,170,75,.35)' },
+  warm_gentle_dynamic_clear:    { name:'봄볕 속 춤',    c1:'#FFE080', c2:'#F08850', glow:'rgba(255,215,95,.4)' },
+  warm_gentle_dynamic_diffuse:  { name:'꿀빛 저녁',     c1:'#FFD090', c2:'#E09860', glow:'rgba(255,192,110,.35)' },
+  warm_gentle_still_clear:      { name:'온화한 햇살',   c1:'#FFE8A0', c2:'#D4A060', glow:'rgba(255,218,130,.4)' },
+  warm_gentle_still_diffuse:    { name:'따뜻한 이슬',   c1:'#FFE8B8', c2:'#D4B080', glow:'rgba(255,208,155,.3)' },
+  cool_intense_dynamic_clear:   { name:'서늘한 별빛',   c1:'#80C0FF', c2:'#3858E0', glow:'rgba(95,155,255,.42)' },
+  cool_intense_dynamic_diffuse: { name:'차가운 파도',   c1:'#60A0E0', c2:'#3878C0', glow:'rgba(75,135,220,.4)' },
+  cool_intense_still_clear:     { name:'푸른 달의 빛',  c1:'#A0D0FF', c2:'#5878D0', glow:'rgba(135,185,255,.4)' },
+  cool_intense_still_diffuse:   { name:'수정빛 서리',   c1:'#B0D8F0', c2:'#6888B8', glow:'rgba(155,198,235,.35)' },
+  cool_gentle_dynamic_clear:    { name:'청량한 바람',   c1:'#A0E8D0', c2:'#58A898', glow:'rgba(115,218,185,.4)' },
+  cool_gentle_dynamic_diffuse:  { name:'안개 속 달빛',  c1:'#C0E0F0', c2:'#78A8C8', glow:'rgba(155,205,235,.35)' },
+  cool_gentle_still_clear:      { name:'고요한 달빛',   c1:'#D0E8FF', c2:'#88B0D8', glow:'rgba(175,218,255,.4)' },
+  cool_gentle_still_diffuse:    { name:'새벽 이슬빛',   c1:'#D8ECF8', c2:'#98BCCE', glow:'rgba(195,228,245,.3)' },
+};
+
+/* 24 events — Erikson 8 stages × 3, 2030 청년 일상 시나리오 */
+const EVENTS = [
+  /* ── 1단계: 신뢰감 vs 불신감 ── */
+  {
+    stage:1, title:'어디까지 믿어야 할까', xp:10,
+    scenario:'SNS에서 새로 알게 된 사람이 갑자기 친하게 지내자며 자주 연락을 해요. 나다움은 진심인지 아닌지 잘 모르겠어서 어떻게 반응해야 할지 고민이에요.',
+    choices:['조금씩 천천히 마음을 열어본다 🌱','일단 편하게 지내며 지켜본다 🌙','솔직하게 서로를 알아가자고 말한다 💬'],
+  },
+  {
+    stage:1, title:'직장 선배의 두 얼굴', xp:10,
+    scenario:'평소엔 친절했던 직장 선배가 오늘은 갑자기 냉정하게 대했어요. 나다움은 내가 뭘 잘못한 건지, 아니면 선배가 원래 이런 사람인지 헷갈려요.',
+    choices:['그냥 넘기고 평소대로 지낸다 🌿','조심스럽게 기분을 확인해본다 💬','거리를 두며 상황을 지켜본다 👀'],
+  },
+  {
+    stage:1, title:'약속이 또 깨졌어', xp:11,
+    scenario:'믿었던 친구가 중요한 약속을 또 어겼어요. 나다움은 기대했던 만큼 실망이 크고, 이 관계를 계속 이어가야 할지 모르겠어요.',
+    choices:['솔직하게 서운함을 전한다 💛','한 번 더 기회를 준다 🤍','잠시 거리를 두며 생각해본다 🌙'],
+  },
+  /* ── 2단계: 자율성 vs 수치심 ── */
+  {
+    stage:2, title:'내가 결정할 수 있어', xp:11,
+    scenario:'부모님이 나다움의 진로에 대해 또 의견을 내셨어요. 스스로 결정하고 싶지만, 반박했다가 상처를 줄까봐 망설여지고 있어요.',
+    choices:['내 생각을 조심스럽게 말한다 💬','일단 들어보고 나중에 결정한다 🌱','동의할 부분과 내 방식 사이를 조율한다 🌟'],
+  },
+  {
+    stage:2, title:'발표가 엉망이 됐어', xp:12,
+    scenario:'공들여 준비한 발표가 생각보다 잘 안 됐어요. 팀원들 앞에서 말이 꼬이고 실수를 했어요. 발표 후 혼자가 되고 싶은 마음이에요.',
+    choices:['"그래도 용기 있었어"라고 스스로 말해준다 💪','다음엔 어떻게 하면 나을지 메모해둔다 📝','오늘 하루는 그냥 쉬어가는 날로 둔다 🌙'],
+  },
+  {
+    stage:2, title:'이번 달 생활비가 부족해', xp:11,
+    scenario:'이번 달 생활비가 예상보다 많이 들었어요. 나다움은 누군가에게 손 벌리기가 싫은데, 혼자 버티는 것도 버거운 상황이에요.',
+    choices:['지출을 정리하며 현실을 직면한다 📊','가까운 사람에게 솔직하게 이야기한다 💬','지금 당장 할 수 있는 작은 절약부터 시작한다 🌿'],
+  },
+  /* ── 3단계: 주도성 vs 죄책감 ── */
+  {
+    stage:3, title:'먼저 나서볼까', xp:12,
+    scenario:'회의에서 아무도 아이디어를 안 내고 있어요. 나다움에게 좋은 생각이 있는데, 틀리면 어쩌지 싶은 마음에 손이 잘 안 올라가요.',
+    choices:['"일단 말해보자"는 마음으로 손을 든다 🙋','먼저 옆사람한테 살짝 물어본다 💬','글로 정리해서 채팅으로 공유한다 💡'],
+  },
+  {
+    stage:3, title:'이기적인 건 아닐까', xp:13,
+    scenario:'나다움이 더 좋은 기회를 위해 팀 프로젝트를 빠지겠다고 했어요. 팀원들은 이해한다고 했지만, 뭔가 미안하고 이기적인 건 아닌지 계속 신경 쓰여요.',
+    choices:['팀원들에게 감사와 미안함을 전한다 💛','"내 성장도 중요해"라고 스스로 다독인다 🌟','다음에 팀을 더 도울 방법을 생각해본다 🌱'],
+  },
+  {
+    stage:3, title:'하고 싶은 건 많은데', xp:12,
+    scenario:'나다움의 투두리스트엔 하고 싶은 것들이 가득해요. 근데 막상 시작을 못 하고 SNS만 보다가 하루가 끝날 때가 많아요.',
+    choices:['가장 하고 싶은 것 하나만 골라 10분 해본다 ⏱️','왜 못 시작하는지 일기로 써본다 📖','완벽하게 하려는 마음을 잠깐 내려놓는다 🌙'],
+  },
+  /* ── 4단계: 근면성 vs 열등감 ── */
+  {
+    stage:4, title:'친구는 벌써 저기까지 갔는데', xp:13,
+    scenario:'SNS에서 비슷한 시기에 시작한 친구가 큰 성과를 냈다는 소식이 떴어요. 나다움은 축하하는 마음과 동시에 왠지 모르게 초라해지는 기분이 들어요.',
+    choices:['진심으로 축하 메시지를 보낸다 🎊','지금 내 속도와 방향을 다시 확인해본다 🧭','SNS를 잠깐 끄고 나만의 일에 집중한다 🌿'],
+  },
+  {
+    stage:4, title:'야근이 이제 당연한 건가', xp:14,
+    scenario:'팀에서 나다움만 제시간에 퇴근하는 것 같아요. 열심히 하는 건 맞는데, 쉬고 싶다는 마음도 죄책감처럼 느껴져요.',
+    choices:['일의 우선순위를 정리해서 효율을 높여본다 📋','"쉬는 것도 일의 일부야"라고 스스로 말해준다 🌱','믿을 수 있는 동료에게 속마음을 털어놓는다 💬'],
+  },
+  {
+    stage:4, title:'열심히 해도 티가 안 나', xp:13,
+    scenario:'분명히 열심히 했는데 결과가 눈에 잘 안 보여요. 나다움은 내가 잘하고 있는 건지, 방향이 맞는 건지 흔들리는 중이에요.',
+    choices:['지금까지 한 것들을 작게라도 기록해본다 📝','신뢰하는 사람에게 피드백을 구해본다 💬','"보이지 않아도 쌓이고 있어"라고 믿어본다 🌟'],
+  },
+  /* ── 5단계: 정체성 vs 역할혼란 (비중 크게) ── */
+  {
+    stage:5, title:'나는 왜 이 일을 하는 걸까', xp:15,
+    scenario:'오늘도 출근하는데 갑자기 "내가 왜 이걸 하고 있지?"라는 생각이 드는 출근길이에요. 일은 계속 하고 있지만 무언가 빠진 느낌이에요.',
+    choices:['"지금 이 순간을 버티는 것도 의미 있어"라고 생각한다 🌙','이 일에서 작은 의미 하나를 찾아본다 💡','잠깐 멈추고 진짜 하고 싶은 걸 써본다 📖'],
+  },
+  {
+    stage:5, title:'자기소개서에서 막혔어', xp:16,
+    scenario:'여러 자기소개서를 쓰다 보니 정작 "나는 어떤 사람인가"에 막혀버렸어요. 다른 사람들은 자신을 잘 아는 것 같은데 나다움은 모르겠어요.',
+    choices:['가장 설렜던 순간들을 떠올려본다 ✨','친한 친구에게 나를 한 마디로 묘사해달라고 해본다 💬','"아직 완성 중인 게 나야"라고 받아들인다 🌱'],
+  },
+  {
+    stage:5, title:'나만의 색깔이 없는 것 같아', xp:16,
+    scenario:'주변에서 자기다운 삶, 자기만의 색깔 같은 말을 많이 써요. 나다움은 내 색깔이 뭔지조차 모르겠어서 조금 불안해요.',
+    choices:['정의하려 하지 않고 일단 좋아하는 걸 해본다 🎨','"색깔은 살면서 만들어지는 거야"라고 생각한다 🌟','남들의 기준을 잠시 내려놓고 내 안을 들여다본다 🌙'],
+  },
+  /* ── 6단계: 친밀감 vs 고립감 ── */
+  {
+    stage:6, title:'가까워지고 싶은데 무서워', xp:14,
+    scenario:'마음이 가는 사람이 생겼는데, 가까워지면 상처받을까봐 먼저 나서기가 어려워요. 나다움은 다가가야 할지 말지 고민 중이에요.',
+    choices:['작고 자연스러운 대화로 조금씩 다가가본다 🌱','지금 이 감정을 일기로 솔직하게 써본다 📖','"연결되고 싶은 마음 자체가 용기야"라고 생각한다 💙'],
+  },
+  {
+    stage:6, title:'친구들이 점점 바빠져', xp:14,
+    scenario:'각자 자기 삶에 바빠지면서 예전처럼 자주 못 보게 됐어요. 나다움은 혼자 있는 시간이 늘고 외로운 마음이 들어요.',
+    choices:['먼저 "보고 싶어"라고 메시지를 보낸다 💬','혼자 즐길 수 있는 취미를 찾아본다 🎨','이 외로움도 지금 나의 일부로 받아들인다 🌙'],
+  },
+  {
+    stage:6, title:'이 관계, 맞는 건가', xp:15,
+    scenario:'사귀는 사람과 자꾸 같은 부분에서 부딪혀요. 나다움은 이 관계를 이어가야 할지, 내가 더 노력해야 하는 건지 헷갈리고 있어요.',
+    choices:['솔직하게 마음을 털어놓는 대화를 시도한다 💛','잠깐 나 혼자 생각할 시간을 갖는다 🌿','관계 안에서 내가 원하는 것을 먼저 정리해본다 📝'],
+  },
+  /* ── 7단계: 생산성 vs 침체감 ── */
+  {
+    stage:7, title:'번아웃이 온 것 같아', xp:16,
+    scenario:'열심히 달려왔는데 어느 순간 아무것도 하기 싫어지고 무기력해졌어요. 나다움은 쉬어야 하는지 더 해야 하는지조차 모르겠어요.',
+    choices:['"지금은 쉬어도 돼"라며 스스로에게 허락을 준다 🌙','몸이 보내는 신호를 무시하지 않고 잠깐 멈춘다 🌿','작은 것 하나라도 해냈을 때 스스로 인정해준다 💛'],
+  },
+  {
+    stage:7, title:'내가 만드는 것이 의미 있을까', xp:17,
+    scenario:'공들여 만든 결과물이 생각보다 반응이 없었어요. 나다움은 그래도 계속해야 할지, 의미가 있는 건지 흔들려요.',
+    choices:['반응보다 내가 성장한 것에 집중한다 🌱','이걸 통해 무엇을 배웠는지 기록해본다 📝','"계속하는 것 자체가 의미야"라고 스스로 말해준다 🌟'],
+  },
+  {
+    stage:7, title:'나만 멈춰 있는 것 같아', xp:16,
+    scenario:'주변이 다 앞으로 나아가는 것 같은데 나다움은 제자리인 것 같은 기분이 들어요. 뭔가를 해야 할 것 같은데 무엇부터 해야 할지 모르겠어요.',
+    choices:['지금 할 수 있는 가장 작은 것부터 시작한다 🌱','"나의 속도로 가고 있어"라고 믿어본다 💙','잠깐 멈추는 것도 준비의 일부라고 받아들인다 🌙'],
+  },
+  /* ── 8단계: 자아통합 vs 절망감 ── */
+  {
+    stage:8, title:'그때 그 선택이 맞았을까', xp:17,
+    scenario:'과거에 내린 결정 하나가 요즘 자꾸 떠올라요. 다르게 했으면 어땠을까 하는 생각이 계속 맴도는데, 나다움은 그 선택을 어떻게 받아들어야 할지 모르겠어요.',
+    choices:['"그때의 나는 최선을 다했어"라고 말해준다 💛','그 경험이 지금의 나를 만든 부분을 찾아본다 🌿','후회보다 지금 내가 할 수 있는 것에 집중한다 🌱'],
+  },
+  {
+    stage:8, title:'내 삶에 의미가 있을까', xp:18,
+    scenario:'문득 지금까지 살아온 게 무슨 의미였나 싶은 생각이 들어요. 나다움은 의미를 찾아야 하는데 답이 잘 안 보여서 무겁고 막막해요.',
+    choices:['내가 누군가에게 줬던 것들을 떠올려본다 💙','작은 것에서도 기쁨을 느꼈던 순간들을 기억해본다 ✨','"의미는 완성형이 아니라 진행형이야"라고 생각한다 🌟'],
+  },
+  {
+    stage:8, title:'있는 그대로 나를 받아들이기', xp:18,
+    scenario:'잘한 것도 못한 것도, 선택도 실수도 모두 합쳐서 지금의 나다움이 있어요. 그 모든 것을 품어줄 수 있을지 스스로에게 물어보게 돼요.',
+    choices:['"이 모든 게 나야"라고 받아들이는 연습을 해본다 🌙','지금 이 자리에 있는 나 자신에게 고맙다고 말해준다 💛','있는 그대로의 나를 보아주는 사람과 이야기 나눈다 🤍'],
+  },
+];
+
+const DECORS = {
+  wall: [
+    { id:0, name:'따뜻한 아이보리', ico:'🤍', unlock:0   },
+    { id:1, name:'봄빛 초록',       ico:'💚', unlock:30  },
+    { id:2, name:'달밤 라벤더',     ico:'💜', unlock:80  },
+  ],
+  light: [
+    { id:0, name:'맑은 햇살',   ico:'☀️', unlock:0   },
+    { id:1, name:'황금빛 저녁', ico:'🌅', unlock:50  },
+    { id:2, name:'고요한 달빛', ico:'🌙', unlock:150 },
+  ],
+  prop: [
+    { id:0, name:'없음',      ico:'◻️', unlock:0   },
+    { id:1, name:'봄꽃 화환', ico:'🌸', unlock:40  },
+    { id:2, name:'별빛 모빌', ico:'⭐', unlock:100 },
+  ],
+};
+
+/* ══════════════════════════════════
+   STATE
+══════════════════════════════════ */
+const DEF = {
+  lv:1, xp:0,
+  name: null,
+  lastPlayed:null, lastCheckin:null,
+  lastEventDate:null, todayEventCount:0,
+  emotions:[],
+  profile:{ w:0,c:0,i:0,g:0,d:0,s:0,cl:0,df:0 },
+  type:null,
+  decor:{ wall:0, light:0, prop:0 },
+  diary:[],
+};
+
+let G = load();
+let pickEmo   = null;
+let feedPick  = null;
+let curEvent  = null;
+let selChoice = null;
+let pendDecor = null;
+
+function load() {
+  try {
+    const r = localStorage.getItem('snj');
+    if (r) {
+      const s = JSON.parse(r);
+      return {
+        ...DEF, ...s,
+        profile: { ...DEF.profile,  ...(s.profile || {}) },
+        decor:   { ...DEF.decor,    ...(s.decor   || {}) },
+        name:     s.name     || null,
+        emotions: s.emotions || [],
+        diary:    s.diary    || [],
+      };
+    }
+  } catch(e){}
+  return { ...DEF, profile:{...DEF.profile}, decor:{...DEF.decor}, emotions:[], diary:[], name:null };
+}
+function save() { localStorage.setItem('snj', JSON.stringify(G)); }
+function today() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+/* ══════════════════════════════════
+   INIT
+══════════════════════════════════ */
+function init() {
+  const d = new Date();
+  const days = ['일','월','화','수','목','금','토'];
+  document.getElementById('emo-date').textContent =
+    `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]}요일)`;
+  buildEmoGrid('emo-grid', 'start');
+
+  if (!G.name) {
+    document.getElementById('screen-name').classList.remove('hidden');
+    return;
+  }
+  if (G.lastCheckin === today()) enterRoom();
+}
+
+function onNameInput() {
+  const val = document.getElementById('name-input').value.trim();
+  document.getElementById('name-btn').disabled = val.length === 0;
+}
+
+function confirmName() {
+  const val = document.getElementById('name-input').value.trim();
+  if (!val) return;
+  G.name = val;
+  save();
+  document.getElementById('screen-name').classList.add('hidden');
+}
+
+function applyName(text) {
+  const nm = G.name || '나다움';
+  if (nm === '나다움') return text;
+  const code = nm.charCodeAt(nm.length - 1);
+  const hasJong = (code >= 0xAC00 && code <= 0xD7A3) ? (code - 0xAC00) % 28 !== 0 : false;
+  return text
+    .replace(/나다움이/g, nm + (hasJong ? '이' : '가'))
+    .replace(/나다움을/g, nm + (hasJong ? '을' : '를'))
+    .replace(/나다움만의/g, nm + '만의')
+    .replace(/나다움의/g, nm + '의')
+    .replace(/나다움/g, nm);
+}
+
+function buildEmoGrid(id, mode) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = '';
+  EMOTIONS.forEach(em => {
+    const d = document.createElement('div');
+    if (mode === 'start') {
+      d.className = 'emo-btn';
+      d.innerHTML = `<span class="ico">${em.ico}</span><span class="lbl">${em.lbl}</span>`;
+      d.onclick = () => {
+        el.querySelectorAll('.emo-btn').forEach(b => b.classList.remove('sel'));
+        d.classList.add('sel'); pickEmo = em.id;
+        document.getElementById('enter-btn').disabled = false;
+      };
+    } else {
+      d.className = 'feed-emo';
+      d.innerHTML = `<span class="ico">${em.ico}</span><span class="lbl">${em.lbl}</span>`;
+      d.onclick = () => {
+        el.querySelectorAll('.feed-emo').forEach(b => b.classList.remove('sel'));
+        d.classList.add('sel'); feedPick = em.id;
+        document.getElementById('feed-ok').disabled = false;
+      };
+    }
+    el.appendChild(d);
+  });
+}
+
+document.getElementById('enter-btn').addEventListener('click', () => {
+  if (!pickEmo) return;
+  G.lastCheckin = today();
+  G.lastPlayed  = Date.now();
+  applyEmo(pickEmo, 2);
+  addXP(5);
+  logDiary({ type:'checkin', emo:pickEmo });
+  save();
+  enterRoom();
+});
+
+function enterRoom() {
+  document.getElementById('screen-emotion').classList.add('hidden');
+  document.getElementById('screen-room').classList.remove('hidden');
+  updateRoom();
+  applyDecor();
+  checkDust();
+  setTimeout(maybeEvent, 1400);
+}
+
+/* ══════════════════════════════════
+   EMOTION & PROFILE
+══════════════════════════════════ */
+function applyEmo(id, wt=1) {
+  const em = EMOTIONS.find(e => e.id === id);
+  if (!em) return;
+  const p = G.profile;
+  p.w+=em.w*wt; p.c+=em.c*wt; p.i+=em.i*wt; p.g+=em.g*wt;
+  p.d+=em.d*wt; p.s+=em.s*wt; p.cl+=em.cl*wt; p.df+=em.df*wt;
+  G.emotions.push({ date:today(), id });
+  calcType();
+}
+function calcType() {
+  const p = G.profile;
+  G.type = `${p.w>=p.c?'warm':'cool'}_${p.i>=p.g?'intense':'gentle'}_${p.d>=p.s?'dynamic':'still'}_${p.cl>=p.df?'clear':'diffuse'}`;
+}
+
+/* ══════════════════════════════════
+   XP / LEVEL
+══════════════════════════════════ */
+function addXP(n) {
+  G.xp += n;
+  while (G.lv < 8) {
+    if (G.xp >= STAGES[G.lv-1].need) {
+      G.lv++;
+      setTimeout(() => toast(`✨ ${STAGES[G.lv-1].name}(으)로 성장했어요!`), 400);
+    } else break;
+  }
+}
+
+/* ══════════════════════════════════
+   ROOM UI
+══════════════════════════════════ */
+function updateRoom() {
+  const st  = STAGES[G.lv - 1];
+  const prv = G.lv > 1 ? STAGES[G.lv-2].need : 0;
+  const pct = Math.min(100, ((G.xp - prv) / (st.need - prv)) * 100);
+
+  document.getElementById('lv-badge').textContent   = `Lv.${G.lv} ${st.name}`;
+  document.getElementById('xp-stage').textContent   = `${G.lv}단계 · ${st.label}`;
+  document.getElementById('xp-txt').textContent     = `${G.xp} / ${st.need} XP`;
+  document.getElementById('xp-fill').style.width    = pct + '%';
+  document.getElementById('stage-nm').textContent   = `${st.label} ${st.icon}`;
+  document.getElementById('stage-desc').textContent = st.desc;
+
+  const cb = document.getElementById('char-body');
+  cb.className = `char-body lv${G.lv}`;
+
+  if (G.lv === 8 && G.type && TYPES[G.type]) {
+    const t = TYPES[G.type];
+    const blob = document.getElementById('char-blob');
+    blob.style.background = `radial-gradient(circle at 40% 40%, ${t.c1} 0%, ${t.c2} 100%)`;
+    blob.style.boxShadow  = `0 0 38px ${t.glow}`;
+    document.getElementById('char-name').textContent = t.name;
+  } else {
+    document.getElementById('char-name').textContent = G.name || '나다움';
+  }
+
+  const recent = G.emotions.slice(-8).reverse();
+  const chips  = document.getElementById('chips');
+  chips.innerHTML = recent.length === 0
+    ? '<div class="chip chip-empty">아직 감정을 먹이지 않았어요</div>'
+    : recent.map(e => { const em = EMOTIONS.find(x => x.id === e.id); return em ? `<div class="chip">${em.ico} ${em.lbl}</div>` : ''; }).join('');
+}
+
+/* ══════════════════════════════════
+   DECOR — apply to room
+══════════════════════════════════ */
+function applyDecor() {
+  const { wall, light, prop } = G.decor;
+
+  // Wall
+  document.getElementById('r-wall').className = `r-wall wall-${wall}`;
+
+  // Light
+  const scene = document.getElementById('room-scene');
+  scene.classList.remove('light-0','light-1','light-2');
+  scene.classList.add(`light-${light}`);
+
+  // Prop
+  const propEl = document.getElementById('room-prop');
+  propEl.innerHTML = '';
+  propEl.className = 'r-prop';
+  if (prop === 0) {
+    propEl.classList.add('hidden');
+  } else if (prop === 1) {
+    propEl.classList.remove('hidden');
+    propEl.classList.add('prop-wreath');
+    propEl.textContent = '🌸🌿🌼🌿🌸';
+  } else if (prop === 2) {
+    propEl.classList.remove('hidden');
+    propEl.classList.add('prop-mobile');
+    propEl.innerHTML = `<div class="mobile-bar"></div><div class="mobile-stars"><span style="animation-delay:0s">⭐</span><span style="animation-delay:.35s">🌟</span><span style="animation-delay:.7s">⭐</span></div>`;
+  }
+}
+
+/* ══════════════════════════════════
+   DUST
+══════════════════════════════════ */
+function checkDust() {
+  if (!G.lastPlayed) return;
+  const days = (Date.now() - G.lastPlayed) / 86400000;
+  if (days < 2) return;
+  const layer = document.getElementById('dust-layer');
+  layer.classList.add('on');
+  document.getElementById('dust-msg').classList.add('on');
+  layer.innerHTML = '';
+  const count = Math.min(35, Math.floor(days * 6));
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'dp';
+    const sz = Math.random() * 7 + 2;
+    p.style.cssText = `width:${sz}px;height:${sz}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*3+2}s;animation-delay:${Math.random()*4}s;`;
+    layer.appendChild(p);
+  }
+}
+function clearDust() {
+  document.getElementById('dust-layer').classList.remove('on');
+  document.getElementById('dust-layer').innerHTML = '';
+  document.getElementById('dust-msg').classList.remove('on');
+}
+
+/* ══════════════════════════════════
+   DIARY LOGGING
+══════════════════════════════════ */
+function logDiary(entry) {
+  if (entry.type === 'checkin' && G.diary.some(d => d.date === today() && d.type === 'checkin')) return;
+  G.diary.push({ date:today(), ...entry });
+  if (G.diary.length > 150) G.diary = G.diary.slice(-150);
+}
+
+/* ══════════════════════════════════
+   FEED MODAL
+══════════════════════════════════ */
+function openFeed() {
+  feedPick = null;
+  document.getElementById('feed-ok').disabled = true;
+  buildEmoGrid('feed-grid', 'feed');
+  document.getElementById('modal-feed').classList.remove('hidden');
+}
+function confirmFeed() {
+  if (!feedPick) return;
+  applyEmo(feedPick, 1);
+  addXP(8);
+  G.lastPlayed = Date.now();
+  logDiary({ type:'feed', emo:feedPick });
+  save();
+  clearDust();
+  document.getElementById('modal-feed').classList.add('hidden');
+  updateRoom();
+  const em = EMOTIONS.find(e => e.id === feedPick);
+  xpPop('+8 XP');
+  toast(`${em.ico} ${em.lbl} 감정을 먹였어요! +8 XP`);
+  feedPick = null;
+}
+
+/* ══════════════════════════════════
+   EVENT MODAL — 60%, max 2/day
+══════════════════════════════════ */
+function maybeEvent() {
+  if (G.lastEventDate !== today()) { G.todayEventCount = 0; G.lastEventDate = today(); }
+  if (G.todayEventCount >= 2) return;
+  if (Math.random() > 0.6) return;
+  const pool = EVENTS.filter(e => e.stage <= G.lv);
+  if (!pool.length) return;
+  G.todayEventCount++;
+  save();
+  showEvent(pool[Math.floor(Math.random() * pool.length)]);
+}
+function showEvent(ev) {
+  curEvent = ev; selChoice = null;
+  document.getElementById('ev-title').textContent = ev.title;
+  document.getElementById('ev-sub').textContent   = STAGES[Math.max(0, ev.stage-1)].label + ' 이야기';
+  document.getElementById('ev-scene').textContent = applyName(ev.scenario);
+  document.getElementById('custom-ta').value      = '';
+  const box = document.getElementById('ev-choices');
+  box.innerHTML = '';
+  ev.choices.forEach(ch => {
+    const b = document.createElement('button');
+    b.className = 'ch-btn'; b.textContent = ch;
+    b.onclick = () => {
+      box.querySelectorAll('.ch-btn').forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel'); selChoice = ch;
+      document.getElementById('custom-ta').value = '';
+    };
+    box.appendChild(b);
+  });
+  document.getElementById('modal-event').classList.remove('hidden');
+}
+function confirmEvent() {
+  const custom = document.getElementById('custom-ta').value.trim();
+  if (!selChoice && !custom) { toast('선택지를 고르거나 직접 적어주세요 💭'); return; }
+  const choice = custom || selChoice;
+  logDiary({ type:'event', title:curEvent.title, choice });
+  addXP(curEvent.xp);
+  save();
+  updateRoom();
+  document.getElementById('modal-event').classList.add('hidden');
+  xpPop(`+${curEvent.xp} XP`);
+  toast(`마음이 전해졌어요 ✨ +${curEvent.xp} XP`);
+}
+
+/* ══════════════════════════════════
+   DECOR MODAL
+══════════════════════════════════ */
+function openDecor() {
+  pendDecor = { ...G.decor };
+  renderDecorModal();
+  document.getElementById('modal-decor').classList.remove('hidden');
+}
+function renderDecorModal() {
+  ['wall','light','prop'].forEach(type => {
+    const container = document.getElementById(`decor-${type}`);
+    container.innerHTML = DECORS[type].map(opt => {
+      const isSel    = pendDecor[type] === opt.id;
+      const isLocked = G.xp < opt.unlock;
+      const reqLabel = isSel ? '✓ 선택됨' : isLocked ? `🔒 ${opt.unlock} XP` : '해금됨';
+      return `<div class="decor-opt${isSel?' sel':''}${isLocked?' locked':''}"
+        onclick="${isLocked ? `toast('${opt.unlock} XP가 필요해요 🔒')` : `selectDecor('${type}',${opt.id})`}">
+        <span class="d-ico">${opt.ico}</span>
+        <span class="d-name">${opt.name}</span>
+        <span class="d-req">${reqLabel}</span>
+      </div>`;
+    }).join('');
+  });
+}
+function selectDecor(type, id) {
+  pendDecor[type] = id;
+  renderDecorModal();
+}
+function confirmDecor() {
+  G.decor = { ...pendDecor };
+  save();
+  applyDecor();
+  document.getElementById('modal-decor').classList.add('hidden');
+  toast('방이 꾸며졌어요 🌟');
+}
+
+/* ══════════════════════════════════
+   DIARY MODAL
+══════════════════════════════════ */
+function openDiary() {
+  renderDiary();
+  document.getElementById('modal-diary').classList.remove('hidden');
+}
+function renderDiary() {
+  const el = document.getElementById('diary-list');
+  if (!G.diary || G.diary.length === 0) {
+    el.innerHTML = '<div class="diary-empty">아직 기록이 없어요 🌱<br><br>감정을 먹이거나<br>이야기를 나누면 여기에 쌓여요</div>';
+    return;
+  }
+  // group by date
+  const byDate = {};
+  G.diary.forEach(entry => { if (!byDate[entry.date]) byDate[entry.date] = []; byDate[entry.date].push(entry); });
+  const dayNames = ['일','월','화','수','목','금','토'];
+
+  el.innerHTML = Object.keys(byDate).sort().reverse().map(date => {
+    const entries = byDate[date];
+    const d = new Date(date + 'T00:00:00');
+    const dateStr = `${d.getMonth()+1}월 ${d.getDate()}일 (${dayNames[d.getDay()]}요일)`;
+
+    const checkin = entries.find(e => e.type === 'checkin');
+    const feeds   = entries.filter(e => e.type === 'feed');
+    const events  = entries.filter(e => e.type === 'event');
+
+    const checkinHtml = checkin ? (() => {
+      const em = EMOTIONS.find(x => x.id === checkin.emo);
+      return em ? `<div class="diary-item">🌅 아침 감정 · <strong>${em.ico} ${em.lbl}</strong></div>` : '';
+    })() : '';
+
+    const feedsHtml = feeds.length > 0 ? `<div class="diary-item">🫧 먹인 감정 · ${feeds.map(f => {
+      const em = EMOTIONS.find(x => x.id === f.emo);
+      return em ? `${em.ico} ${em.lbl}` : '';
+    }).filter(Boolean).join(', ')}</div>` : '';
+
+    const eventsHtml = events.map(e => `
+      <div class="diary-event">
+        <div class="diary-event-title">✨ ${e.title}</div>
+        <div class="diary-event-choice">→ "${e.choice}"</div>
+      </div>`).join('');
+
+    return `<div class="diary-entry"><div class="diary-date">${dateStr}</div>${checkinHtml}${feedsHtml}${eventsHtml}</div>`;
+  }).join('');
+}
+
+/* ══════════════════════════════════
+   HELPERS
+══════════════════════════════════ */
+function bgClose(e, id) { if (e.target.id === id) document.getElementById(id).classList.add('hidden'); }
+
+let _tid;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  clearTimeout(_tid); _tid = setTimeout(() => el.classList.remove('on'), 2600);
+}
+function xpPop(txt) {
+  const ref = document.getElementById('r-char');
+  const el = document.createElement('div');
+  el.className = 'xp-pop'; el.textContent = txt; el.style.bottom = '110%';
+  ref.style.position = 'absolute';
+  ref.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+
+/* ══════════════════════════════════
+   MINI-GAMES
+══════════════════════════════════ */
+function openMini() {
+  document.getElementById('modal-mini').classList.remove('hidden');
+}
+
+/* ── 마음 풍선 불기 ── */
+let bTimer = null, bScale = 1, bRounds = 0;
+
+function openBalloon() {
+  bRounds = 0; bScale = 1;
+  if (bTimer) { clearInterval(bTimer); bTimer = null; }
+  document.getElementById('balloon-body').style.transform = 'scale(1)';
+  document.getElementById('balloon-rounds').textContent = '0 / 3 완료';
+  document.getElementById('balloon-hint').textContent   = '버튼을 꾹 누르면 풍선이 부풀어요 💨';
+  document.getElementById('balloon-btn').disabled = false;
+  document.getElementById('modal-mini').classList.add('hidden');
+  document.getElementById('modal-balloon').classList.remove('hidden');
+}
+
+function balloonPress(e) {
+  e.preventDefault();
+  if (bTimer || document.getElementById('balloon-btn').disabled) return;
+  document.getElementById('balloon-hint').textContent = '숨을 들이마셔요... 🌬️';
+  bTimer = setInterval(() => {
+    bScale = Math.min(2.0, bScale + 0.032);
+    document.getElementById('balloon-body').style.transform = `scale(${bScale})`;
+  }, 50);
+}
+
+function balloonRelease(e) {
+  if (e) e.preventDefault();
+  if (!bTimer) return;
+  clearInterval(bTimer); bTimer = null;
+  const wasGood = bScale >= 1.75;
+  const deflate = setInterval(() => {
+    bScale = Math.max(1.0, bScale - 0.042);
+    document.getElementById('balloon-body').style.transform = `scale(${bScale})`;
+    if (bScale <= 1.0) {
+      clearInterval(deflate);
+      if (wasGood) {
+        bRounds++;
+        document.getElementById('balloon-rounds').textContent = `${bRounds} / 3 완료`;
+        if (bRounds >= 3) {
+          document.getElementById('balloon-hint').textContent = '마음이 조금 가벼워졌나요? 🌸';
+          document.getElementById('balloon-btn').disabled = true;
+          setTimeout(() => {
+            document.getElementById('modal-balloon').classList.add('hidden');
+            document.getElementById('balloon-btn').disabled = false;
+            addXP(10); save(); updateRoom();
+            xpPop('+10 XP');
+            toast('마음 풍선 불기 완료! +10 XP 🎈');
+          }, 1600);
+        } else {
+          document.getElementById('balloon-hint').textContent = `${bRounds}번 완료! 한 번 더 해볼까요? 💪`;
+        }
+      } else {
+        document.getElementById('balloon-hint').textContent = '조금 더 꾹 눌러봐요 💨';
+      }
+    }
+  }, 28);
+}
+
+function closeBalloon() {
+  if (bTimer) { clearInterval(bTimer); bTimer = null; }
+  document.getElementById('modal-balloon').classList.add('hidden');
+}
+
+/* ── 생각 분리수거 ── */
+const SORT_WORDS = ['걱정','기대','후회','설렘','피로','분노','감사','불안','희망','외로움'];
+let sortIdx = 0, sortLeft = [], sortRight = [], sortStartX = 0, sortDragging = false;
+
+function openSort() {
+  sortIdx = 0; sortLeft = []; sortRight = []; sortDragging = false;
+  document.getElementById('sort-result').classList.add('hidden');
+  document.getElementById('sort-area').style.display = 'flex';
+  document.getElementById('sort-hint-txt').style.display = 'block';
+  document.getElementById('sort-count').textContent = '1 / 10';
+  showSortCard();
+  document.getElementById('modal-mini').classList.add('hidden');
+  document.getElementById('modal-sort').classList.remove('hidden');
+  bindSort();
+}
+
+function showSortCard() {
+  const card = document.getElementById('sort-card');
+  card.style.cssText = 'transform:translateX(0) rotate(0deg);opacity:1;transition:none;';
+  card.textContent = SORT_WORDS[sortIdx];
+}
+
+function bindSort() {
+  const card = document.getElementById('sort-card');
+  card.onmousedown  = e => { sortStartX = e.clientX; sortDragging = true; card.classList.add('grabbing'); };
+  card.ontouchstart = e => { sortStartX = e.touches[0].clientX; sortDragging = true; card.classList.add('grabbing'); e.preventDefault(); };
+  document.onmousemove  = e => { if (!sortDragging) return; const dx = e.clientX - sortStartX; card.style.transform = `translateX(${dx}px) rotate(${dx*.07}deg)`; };
+  document.ontouchmove  = e => { if (!sortDragging) return; const dx = e.touches[0].clientX - sortStartX; card.style.transform = `translateX(${dx}px) rotate(${dx*.07}deg)`; e.preventDefault(); };
+  const release = cx => {
+    if (!sortDragging) return;
+    sortDragging = false;
+    card.classList.remove('grabbing');
+    const dx = cx - sortStartX;
+    if (Math.abs(dx) >= 70) swipeSort(dx > 0 ? 'right' : 'left');
+    else card.style.cssText = 'transform:translateX(0) rotate(0deg);transition:transform .2s;';
+  };
+  document.onmouseup  = e => release(e.clientX);
+  document.ontouchend = e => release(e.changedTouches[0].clientX);
+}
+
+function swipeSort(dir) {
+  const card = document.getElementById('sort-card');
+  const tx = dir === 'right' ? 380 : -380;
+  card.style.cssText = `transform:translateX(${tx}px) rotate(${dir==='right'?18:-18}deg);opacity:0;transition:transform .24s ease,opacity .24s ease;`;
+  if (dir === 'left') sortLeft.push(SORT_WORDS[sortIdx]);
+  else sortRight.push(SORT_WORDS[sortIdx]);
+  sortIdx++;
+  setTimeout(() => {
+    if (sortIdx >= 10) finishSort();
+    else { document.getElementById('sort-count').textContent = `${sortIdx+1} / 10`; showSortCard(); }
+  }, 260);
+}
+
+function finishSort() {
+  document.getElementById('sort-area').style.display = 'none';
+  document.getElementById('sort-hint-txt').style.display = 'none';
+  document.getElementById('sort-result').classList.remove('hidden');
+  document.getElementById('sort-left-chips').innerHTML  = sortLeft.map(w  => `<div class="sort-chip">${w}</div>`).join('');
+  document.getElementById('sort-right-chips').innerHTML = sortRight.map(w => `<div class="sort-chip">${w}</div>`).join('');
+  document.onmousemove = null; document.onmouseup = null;
+  document.ontouchmove = null; document.ontouchend = null;
+}
+
+function closeSortDone() {
+  document.getElementById('modal-sort').classList.add('hidden');
+  addXP(12); save(); updateRoom();
+  xpPop('+12 XP');
+  toast('생각 분리수거 완료! +12 XP ♻️');
+}
+
+function closeSort() {
+  document.onmousemove = null; document.onmouseup = null;
+  document.ontouchmove = null; document.ontouchend = null;
+  document.getElementById('modal-sort').classList.add('hidden');
+}
+
+init();
+</script>
+</body>
+</html>

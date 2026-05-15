@@ -168,24 +168,19 @@
     /* Character */
     .r-char { position: absolute; bottom: 38%; left: 50%; transform: translateX(-50%); z-index: 6; text-align: center; }
     .char-body { width: 90px; height: 90px; animation: charFloat 3.2s ease-in-out infinite; position: relative; }
-    .char-blob { width: 100%; height: 100%; border-radius: 60% 40% 55% 45% / 50% 55% 45% 55%; animation: morphBlob 4s ease-in-out infinite; transition: filter 1.2s ease, background 1.2s ease, box-shadow .8s ease; position: relative; overflow: hidden; }
-    .char-blob::after { content: ''; position: absolute; top: 12%; left: 18%; width: 28%; height: 22%; background: rgba(255,255,255,.32); border-radius: 50%; transform: rotate(-30deg); }
-    .lv1 .char-blob { background: radial-gradient(circle at 40% 40%, #D0CBCA, #A8A0A8); filter: blur(9px) saturate(0.2) brightness(0.95); }
-    .lv2 .char-blob { background: radial-gradient(circle at 40% 40%, #D8CBBA, #B8A8C0); filter: blur(6px) saturate(0.4); }
-    .lv3 .char-blob { background: radial-gradient(circle at 40% 40%, #DED5A8, #C0A8D8); filter: blur(4px) saturate(0.6); }
-    .lv4 .char-blob { background: radial-gradient(circle at 40% 40%, #E8D880, #D8A8E0); filter: blur(2.5px) saturate(0.75); }
-    .lv5 .char-blob { background: radial-gradient(circle at 40% 40%, #F5E060, #EE88D0); filter: blur(1px) saturate(0.88); }
-    .lv6 .char-blob { background: radial-gradient(circle at 40% 40%, #FFD840, #FF80BC); filter: saturate(1.0); }
-    .lv7 .char-blob { background: radial-gradient(circle at 40% 40%, #FFCC30, #FF68A8); filter: saturate(1.2) brightness(1.05); }
-    .lv8 .char-blob { background: radial-gradient(circle at 40% 40%, #FFB828, #FF5898); filter: saturate(1.5) brightness(1.08); box-shadow: 0 0 32px rgba(255,150,80,.45); }
+    .char-svg  { display: block; overflow: visible; }
     .char-name { font-size: 11px; color: var(--brown-md); font-weight: 500; margin-top: 6px; }
+    .char-particles { position: absolute; inset: 0; pointer-events: none; }
+    .char-particles span { position: absolute; width: 5px; height: 5px; border-radius: 50%; animation: charParticle 1.8s ease-out infinite; }
 
-    @keyframes charFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
-    @keyframes morphBlob {
-      0%,100% { border-radius: 60% 40% 55% 45% / 50% 55% 45% 55%; }
-      33%     { border-radius: 42% 58% 62% 38% / 60% 42% 52% 48%; }
-      66%     { border-radius: 50% 50% 42% 58% / 44% 62% 48% 52%; }
-    }
+    @keyframes charFloat    { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+    @keyframes charFlame    { 0%,100% { transform: scaleX(1) skewX(0deg); } 50% { transform: scaleX(.92) skewX(5deg); } }
+    @keyframes charSparkle  { 0%,100% { filter: brightness(1); } 50% { filter: brightness(1.4) drop-shadow(0 0 5px rgba(255,255,255,.7)); } }
+    @keyframes charBubble   { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-5px) scale(1.03); } }
+    @keyframes charParticle { 0% { transform: translateY(0); opacity: .85; } 100% { transform: translateY(-34px); opacity: 0; } }
+    .svg-flame   { animation: charFlame   .88s ease-in-out infinite; transform-origin: 45px 88px; }
+    .svg-crystal { animation: charSparkle 1.7s ease-in-out infinite; }
+    .svg-bubble  { animation: charBubble  2.5s ease-in-out infinite; }
 
     /* Props */
     .r-prop { position: absolute; z-index: 5; }
@@ -285,8 +280,20 @@
     ::-webkit-scrollbar-thumb { background: var(--beige-dk); border-radius: 2px; }
 
     /* ── MINI-GAMES ── */
-    .btn-mini { background: var(--white); color: var(--brown); border: 2px solid var(--beige); }
-    .btn-mini:hover { background: var(--cream); transform: translateY(-2px); }
+    .btn-mini, .btn-leaf { background: var(--white); color: var(--brown); border: 2px solid var(--beige); }
+    .btn-mini:hover, .btn-leaf:hover { background: var(--cream); transform: translateY(-2px); }
+
+    /* ── TREE GAME ── */
+    .tree-tabs { display: flex; gap: 8px; margin-bottom: 16px; }
+    .tree-tab { flex: 1; padding: 10px; background: var(--cream); border: 2px solid var(--beige); border-radius: 12px; font-size: 13px; font-weight: 600; color: var(--brown); cursor: pointer; font-family: inherit; transition: all .2s; }
+    .tree-tab.sel { background: #FDF0E6; border-color: var(--accent); }
+    .tree-prog { text-align: center; font-size: 13px; color: var(--brown-md); margin-bottom: 10px; font-weight: 500; }
+    .tree-wrap { display: flex; justify-content: center; margin-bottom: 14px; }
+    .tree-done-msg { text-align: center; font-size: 15px; font-weight: 600; color: var(--accent); margin-bottom: 14px; padding: 12px; background: #FDF0E6; border-radius: 14px; }
+    .gal-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; }
+    .gal-item { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 14px; padding: 12px 8px; text-align: center; }
+    .gal-date { font-size: 11px; color: var(--brown-md); margin-top: 6px; }
+    .gal-empty { text-align: center; color: var(--brown-lt); font-size: 13px; padding: 36px 0; line-height: 1.8; }
     .mini-cards { display: flex; gap: 12px; margin-bottom: 4px; }
     .mini-card { flex:1; background: var(--cream); border: 2px solid var(--beige); border-radius: 18px; padding: 22px 10px; text-align: center; cursor: pointer; transition: all .2s; }
     .mini-card:hover { border-color: var(--accent); background: #FDF0E6; transform: translateY(-2px); }
@@ -319,20 +326,43 @@
 <body>
 <div id="app">
 
-  <!-- NAME SETUP (first launch only) -->
-  <div id="screen-name" class="screen hidden">
+  <!-- AUTH SCREEN -->
+  <div id="screen-auth" class="screen" style="min-height:100vh; background:linear-gradient(160deg,#F7F2EA 0%,#EEE6D8 100%); justify-content:center; align-items:center; padding:40px 28px; gap:24px; display:flex; flex-direction:column;">
     <div class="name-logo">신나는 자기이해</div>
-    <div class="name-welcome">처음 오셨군요, 반가워요 🌱<br>함께 성장할 캐릭터의 이름을 지어주세요</div>
-    <div class="name-card">
-      <label for="name-input">캐릭터 이름 (최대 8자)</label>
-      <input class="name-input" id="name-input" type="text" maxlength="8"
-             placeholder="이름을 입력해주세요" oninput="onNameInput()">
+    <p class="name-welcome">나만의 방을 꾸미며<br>감정을 탐험해요 🌱</p>
+
+    <div class="name-card" style="display:flex; flex-direction:column; gap:14px;">
+      <!-- 탭 -->
+      <div style="display:flex; gap:8px;">
+        <button id="tab-login" onclick="switchTab('login')"
+          style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px;">로그인</button>
+        <button id="tab-signup" onclick="switchTab('signup')"
+          style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--beige);background:var(--cream);color:var(--brown);font-weight:600;cursor:pointer;font-family:inherit;font-size:14px;">회원가입</button>
+      </div>
+
+      <div>
+        <label style="display:block;font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px;">아이디</label>
+        <input id="auth-id" class="name-input" type="text" placeholder="아이디를 입력하세요" />
+      </div>
+
+      <div id="nick-row" class="hidden">
+        <label style="display:block;font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px;">닉네임</label>
+        <input id="auth-nick" class="name-input" type="text" maxlength="8" placeholder="게임에서 쓸 이름 (최대 8자)" />
+      </div>
+
+      <div>
+        <label style="display:block;font-size:14px;font-weight:600;color:var(--brown);margin-bottom:8px;">비밀번호</label>
+        <input id="auth-pw" class="name-input" type="password" placeholder="6자 이상" />
+      </div>
+
+      <div id="auth-error" style="font-size:13px;color:#C0392B;text-align:center;display:none;"></div>
+
+      <button id="auth-btn" class="enter-btn" onclick="doLogin()">로그인</button>
     </div>
-    <button class="enter-btn" id="name-btn" disabled onclick="confirmName()">시작하기 →</button>
   </div>
 
   <!-- EMOTION CHECK-IN -->
-  <div id="screen-emotion" class="screen">
+  <div id="screen-emotion" class="screen hidden">
     <div class="emo-header">
       <div class="emo-title">신나는 자기이해</div>
       <div class="emo-date" id="emo-date"></div>
@@ -401,9 +431,7 @@
       <div class="r-rug"></div>
       <div class="r-prop hidden" id="room-prop"></div>
       <div class="r-char" id="r-char">
-        <div class="char-body lv1" id="char-body">
-          <div class="char-blob" id="char-blob"></div>
-        </div>
+        <div class="char-body" id="char-body"></div>
         <div class="char-name" id="char-name">나다움</div>
       </div>
       <div class="dust-layer" id="dust-layer"></div>
@@ -419,6 +447,7 @@
       <button class="act-btn btn-decor" onclick="openDecor()"><span class="ico">🪴</span>방 꾸미기</button>
       <button class="act-btn btn-diary" onclick="openDiary()"><span class="ico">📖</span>감정 일기</button>
       <button class="act-btn btn-mini"  onclick="openMini()"><span class="ico">🎮</span>미니게임</button>
+      <button class="act-btn btn-leaf"  onclick="openTree()"><span class="ico">🌿</span>나뭇잎 달기</button>
     </div>
     <div class="feed-hist">
       <h3>최근에 먹인 감정들</h3>
@@ -557,6 +586,28 @@
   </div>
 </div>
 
+<!-- TREE MODAL -->
+<div class="overlay hidden" id="modal-tree" onclick="bgClose(event,'modal-tree')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="tree-tabs">
+      <button class="tree-tab sel" id="tab-cur" onclick="switchTreeTab('cur')">🌱 현재 나무</button>
+      <button class="tree-tab"     id="tab-gal" onclick="switchTreeTab('gal')">🖼 갤러리</button>
+    </div>
+
+    <div id="tree-panel-cur">
+      <div class="tree-prog" id="tree-prog">잎 0 / 15</div>
+      <div class="tree-wrap" id="tree-wrap"></div>
+      <div class="tree-done-msg hidden" id="tree-done-msg">🌳 나무가 완성됐어요! 새 나무가 시작됩니다.</div>
+      <button class="ok-btn" id="tree-add-btn" onclick="addTreeLeaf()">🍃 오늘의 나뭇잎 달기</button>
+    </div>
+
+    <div id="tree-panel-gal" class="hidden">
+      <div id="tree-gallery"></div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -612,129 +663,129 @@ const TYPES = {
 const EVENTS = [
   /* ── 1단계: 신뢰감 vs 불신감 ── */
   {
-    stage:1, title:'어디까지 믿어야 할까', xp:10,
+    stage:1, title:'어디까지 믿어야 할까', xp:15,
     scenario:'SNS에서 새로 알게 된 사람이 갑자기 친하게 지내자며 자주 연락을 해요. 나다움은 진심인지 아닌지 잘 모르겠어서 어떻게 반응해야 할지 고민이에요.',
     choices:['조금씩 천천히 마음을 열어본다 🌱','일단 편하게 지내며 지켜본다 🌙','솔직하게 서로를 알아가자고 말한다 💬'],
   },
   {
-    stage:1, title:'직장 선배의 두 얼굴', xp:10,
+    stage:1, title:'직장 선배의 두 얼굴', xp:15,
     scenario:'평소엔 친절했던 직장 선배가 오늘은 갑자기 냉정하게 대했어요. 나다움은 내가 뭘 잘못한 건지, 아니면 선배가 원래 이런 사람인지 헷갈려요.',
     choices:['그냥 넘기고 평소대로 지낸다 🌿','조심스럽게 기분을 확인해본다 💬','거리를 두며 상황을 지켜본다 👀'],
   },
   {
-    stage:1, title:'약속이 또 깨졌어', xp:11,
+    stage:1, title:'약속이 또 깨졌어', xp:16,
     scenario:'믿었던 친구가 중요한 약속을 또 어겼어요. 나다움은 기대했던 만큼 실망이 크고, 이 관계를 계속 이어가야 할지 모르겠어요.',
     choices:['솔직하게 서운함을 전한다 💛','한 번 더 기회를 준다 🤍','잠시 거리를 두며 생각해본다 🌙'],
   },
   /* ── 2단계: 자율성 vs 수치심 ── */
   {
-    stage:2, title:'내가 결정할 수 있어', xp:11,
+    stage:2, title:'내가 결정할 수 있어', xp:16,
     scenario:'부모님이 나다움의 진로에 대해 또 의견을 내셨어요. 스스로 결정하고 싶지만, 반박했다가 상처를 줄까봐 망설여지고 있어요.',
     choices:['내 생각을 조심스럽게 말한다 💬','일단 들어보고 나중에 결정한다 🌱','동의할 부분과 내 방식 사이를 조율한다 🌟'],
   },
   {
-    stage:2, title:'발표가 엉망이 됐어', xp:12,
+    stage:2, title:'발표가 엉망이 됐어', xp:17,
     scenario:'공들여 준비한 발표가 생각보다 잘 안 됐어요. 팀원들 앞에서 말이 꼬이고 실수를 했어요. 발표 후 혼자가 되고 싶은 마음이에요.',
     choices:['"그래도 용기 있었어"라고 스스로 말해준다 💪','다음엔 어떻게 하면 나을지 메모해둔다 📝','오늘 하루는 그냥 쉬어가는 날로 둔다 🌙'],
   },
   {
-    stage:2, title:'이번 달 생활비가 부족해', xp:11,
+    stage:2, title:'이번 달 생활비가 부족해', xp:16,
     scenario:'이번 달 생활비가 예상보다 많이 들었어요. 나다움은 누군가에게 손 벌리기가 싫은데, 혼자 버티는 것도 버거운 상황이에요.',
     choices:['지출을 정리하며 현실을 직면한다 📊','가까운 사람에게 솔직하게 이야기한다 💬','지금 당장 할 수 있는 작은 절약부터 시작한다 🌿'],
   },
   /* ── 3단계: 주도성 vs 죄책감 ── */
   {
-    stage:3, title:'먼저 나서볼까', xp:12,
+    stage:3, title:'먼저 나서볼까', xp:17,
     scenario:'회의에서 아무도 아이디어를 안 내고 있어요. 나다움에게 좋은 생각이 있는데, 틀리면 어쩌지 싶은 마음에 손이 잘 안 올라가요.',
     choices:['"일단 말해보자"는 마음으로 손을 든다 🙋','먼저 옆사람한테 살짝 물어본다 💬','글로 정리해서 채팅으로 공유한다 💡'],
   },
   {
-    stage:3, title:'이기적인 건 아닐까', xp:13,
+    stage:3, title:'이기적인 건 아닐까', xp:18,
     scenario:'나다움이 더 좋은 기회를 위해 팀 프로젝트를 빠지겠다고 했어요. 팀원들은 이해한다고 했지만, 뭔가 미안하고 이기적인 건 아닌지 계속 신경 쓰여요.',
     choices:['팀원들에게 감사와 미안함을 전한다 💛','"내 성장도 중요해"라고 스스로 다독인다 🌟','다음에 팀을 더 도울 방법을 생각해본다 🌱'],
   },
   {
-    stage:3, title:'하고 싶은 건 많은데', xp:12,
+    stage:3, title:'하고 싶은 건 많은데', xp:17,
     scenario:'나다움의 투두리스트엔 하고 싶은 것들이 가득해요. 근데 막상 시작을 못 하고 SNS만 보다가 하루가 끝날 때가 많아요.',
     choices:['가장 하고 싶은 것 하나만 골라 10분 해본다 ⏱️','왜 못 시작하는지 일기로 써본다 📖','완벽하게 하려는 마음을 잠깐 내려놓는다 🌙'],
   },
   /* ── 4단계: 근면성 vs 열등감 ── */
   {
-    stage:4, title:'친구는 벌써 저기까지 갔는데', xp:13,
+    stage:4, title:'친구는 벌써 저기까지 갔는데', xp:18,
     scenario:'SNS에서 비슷한 시기에 시작한 친구가 큰 성과를 냈다는 소식이 떴어요. 나다움은 축하하는 마음과 동시에 왠지 모르게 초라해지는 기분이 들어요.',
     choices:['진심으로 축하 메시지를 보낸다 🎊','지금 내 속도와 방향을 다시 확인해본다 🧭','SNS를 잠깐 끄고 나만의 일에 집중한다 🌿'],
   },
   {
-    stage:4, title:'야근이 이제 당연한 건가', xp:14,
+    stage:4, title:'야근이 이제 당연한 건가', xp:19,
     scenario:'팀에서 나다움만 제시간에 퇴근하는 것 같아요. 열심히 하는 건 맞는데, 쉬고 싶다는 마음도 죄책감처럼 느껴져요.',
     choices:['일의 우선순위를 정리해서 효율을 높여본다 📋','"쉬는 것도 일의 일부야"라고 스스로 말해준다 🌱','믿을 수 있는 동료에게 속마음을 털어놓는다 💬'],
   },
   {
-    stage:4, title:'열심히 해도 티가 안 나', xp:13,
+    stage:4, title:'열심히 해도 티가 안 나', xp:18,
     scenario:'분명히 열심히 했는데 결과가 눈에 잘 안 보여요. 나다움은 내가 잘하고 있는 건지, 방향이 맞는 건지 흔들리는 중이에요.',
     choices:['지금까지 한 것들을 작게라도 기록해본다 📝','신뢰하는 사람에게 피드백을 구해본다 💬','"보이지 않아도 쌓이고 있어"라고 믿어본다 🌟'],
   },
   /* ── 5단계: 정체성 vs 역할혼란 (비중 크게) ── */
   {
-    stage:5, title:'나는 왜 이 일을 하는 걸까', xp:15,
+    stage:5, title:'나는 왜 이 일을 하는 걸까', xp:20,
     scenario:'오늘도 출근하는데 갑자기 "내가 왜 이걸 하고 있지?"라는 생각이 드는 출근길이에요. 일은 계속 하고 있지만 무언가 빠진 느낌이에요.',
     choices:['"지금 이 순간을 버티는 것도 의미 있어"라고 생각한다 🌙','이 일에서 작은 의미 하나를 찾아본다 💡','잠깐 멈추고 진짜 하고 싶은 걸 써본다 📖'],
   },
   {
-    stage:5, title:'자기소개서에서 막혔어', xp:16,
+    stage:5, title:'자기소개서에서 막혔어', xp:21,
     scenario:'여러 자기소개서를 쓰다 보니 정작 "나는 어떤 사람인가"에 막혀버렸어요. 다른 사람들은 자신을 잘 아는 것 같은데 나다움은 모르겠어요.',
     choices:['가장 설렜던 순간들을 떠올려본다 ✨','친한 친구에게 나를 한 마디로 묘사해달라고 해본다 💬','"아직 완성 중인 게 나야"라고 받아들인다 🌱'],
   },
   {
-    stage:5, title:'나만의 색깔이 없는 것 같아', xp:16,
+    stage:5, title:'나만의 색깔이 없는 것 같아', xp:21,
     scenario:'주변에서 자기다운 삶, 자기만의 색깔 같은 말을 많이 써요. 나다움은 내 색깔이 뭔지조차 모르겠어서 조금 불안해요.',
     choices:['정의하려 하지 않고 일단 좋아하는 걸 해본다 🎨','"색깔은 살면서 만들어지는 거야"라고 생각한다 🌟','남들의 기준을 잠시 내려놓고 내 안을 들여다본다 🌙'],
   },
   /* ── 6단계: 친밀감 vs 고립감 ── */
   {
-    stage:6, title:'가까워지고 싶은데 무서워', xp:14,
+    stage:6, title:'가까워지고 싶은데 무서워', xp:19,
     scenario:'마음이 가는 사람이 생겼는데, 가까워지면 상처받을까봐 먼저 나서기가 어려워요. 나다움은 다가가야 할지 말지 고민 중이에요.',
     choices:['작고 자연스러운 대화로 조금씩 다가가본다 🌱','지금 이 감정을 일기로 솔직하게 써본다 📖','"연결되고 싶은 마음 자체가 용기야"라고 생각한다 💙'],
   },
   {
-    stage:6, title:'친구들이 점점 바빠져', xp:14,
+    stage:6, title:'친구들이 점점 바빠져', xp:19,
     scenario:'각자 자기 삶에 바빠지면서 예전처럼 자주 못 보게 됐어요. 나다움은 혼자 있는 시간이 늘고 외로운 마음이 들어요.',
     choices:['먼저 "보고 싶어"라고 메시지를 보낸다 💬','혼자 즐길 수 있는 취미를 찾아본다 🎨','이 외로움도 지금 나의 일부로 받아들인다 🌙'],
   },
   {
-    stage:6, title:'이 관계, 맞는 건가', xp:15,
+    stage:6, title:'이 관계, 맞는 건가', xp:20,
     scenario:'사귀는 사람과 자꾸 같은 부분에서 부딪혀요. 나다움은 이 관계를 이어가야 할지, 내가 더 노력해야 하는 건지 헷갈리고 있어요.',
     choices:['솔직하게 마음을 털어놓는 대화를 시도한다 💛','잠깐 나 혼자 생각할 시간을 갖는다 🌿','관계 안에서 내가 원하는 것을 먼저 정리해본다 📝'],
   },
   /* ── 7단계: 생산성 vs 침체감 ── */
   {
-    stage:7, title:'번아웃이 온 것 같아', xp:16,
+    stage:7, title:'번아웃이 온 것 같아', xp:22,
     scenario:'열심히 달려왔는데 어느 순간 아무것도 하기 싫어지고 무기력해졌어요. 나다움은 쉬어야 하는지 더 해야 하는지조차 모르겠어요.',
     choices:['"지금은 쉬어도 돼"라며 스스로에게 허락을 준다 🌙','몸이 보내는 신호를 무시하지 않고 잠깐 멈춘다 🌿','작은 것 하나라도 해냈을 때 스스로 인정해준다 💛'],
   },
   {
-    stage:7, title:'내가 만드는 것이 의미 있을까', xp:17,
+    stage:7, title:'내가 만드는 것이 의미 있을까', xp:23,
     scenario:'공들여 만든 결과물이 생각보다 반응이 없었어요. 나다움은 그래도 계속해야 할지, 의미가 있는 건지 흔들려요.',
     choices:['반응보다 내가 성장한 것에 집중한다 🌱','이걸 통해 무엇을 배웠는지 기록해본다 📝','"계속하는 것 자체가 의미야"라고 스스로 말해준다 🌟'],
   },
   {
-    stage:7, title:'나만 멈춰 있는 것 같아', xp:16,
+    stage:7, title:'나만 멈춰 있는 것 같아', xp:22,
     scenario:'주변이 다 앞으로 나아가는 것 같은데 나다움은 제자리인 것 같은 기분이 들어요. 뭔가를 해야 할 것 같은데 무엇부터 해야 할지 모르겠어요.',
     choices:['지금 할 수 있는 가장 작은 것부터 시작한다 🌱','"나의 속도로 가고 있어"라고 믿어본다 💙','잠깐 멈추는 것도 준비의 일부라고 받아들인다 🌙'],
   },
   /* ── 8단계: 자아통합 vs 절망감 ── */
   {
-    stage:8, title:'그때 그 선택이 맞았을까', xp:17,
+    stage:8, title:'그때 그 선택이 맞았을까', xp:24,
     scenario:'과거에 내린 결정 하나가 요즘 자꾸 떠올라요. 다르게 했으면 어땠을까 하는 생각이 계속 맴도는데, 나다움은 그 선택을 어떻게 받아들어야 할지 모르겠어요.',
     choices:['"그때의 나는 최선을 다했어"라고 말해준다 💛','그 경험이 지금의 나를 만든 부분을 찾아본다 🌿','후회보다 지금 내가 할 수 있는 것에 집중한다 🌱'],
   },
   {
-    stage:8, title:'내 삶에 의미가 있을까', xp:18,
+    stage:8, title:'내 삶에 의미가 있을까', xp:25,
     scenario:'문득 지금까지 살아온 게 무슨 의미였나 싶은 생각이 들어요. 나다움은 의미를 찾아야 하는데 답이 잘 안 보여서 무겁고 막막해요.',
     choices:['내가 누군가에게 줬던 것들을 떠올려본다 💙','작은 것에서도 기쁨을 느꼈던 순간들을 기억해본다 ✨','"의미는 완성형이 아니라 진행형이야"라고 생각한다 🌟'],
   },
   {
-    stage:8, title:'있는 그대로 나를 받아들이기', xp:18,
+    stage:8, title:'있는 그대로 나를 받아들이기', xp:25,
     scenario:'잘한 것도 못한 것도, 선택도 실수도 모두 합쳐서 지금의 나다움이 있어요. 그 모든 것을 품어줄 수 있을지 스스로에게 물어보게 돼요.',
     choices:['"이 모든 게 나야"라고 받아들이는 연습을 해본다 🌙','지금 이 자리에 있는 나 자신에게 고맙다고 말해준다 💛','있는 그대로의 나를 보아주는 사람과 이야기 나눈다 🤍'],
   },
@@ -763,14 +814,18 @@ const DECORS = {
 ══════════════════════════════════ */
 const DEF = {
   lv:1, xp:0,
-  name: null,
+  name: null, charColorIdx: null,
   lastPlayed:null, lastCheckin:null,
   lastEventDate:null, todayEventCount:0,
+  lastFeedDate:null,  todayFeedCount:0,
   emotions:[],
   profile:{ w:0,c:0,i:0,g:0,d:0,s:0,cl:0,df:0 },
   type:null,
   decor:{ wall:0, light:0, prop:0 },
   diary:[],
+  seenEvents:[],
+  trees:[],
+  currentTree: null,
 };
 
 let G = load();
@@ -789,13 +844,19 @@ function load() {
         ...DEF, ...s,
         profile: { ...DEF.profile,  ...(s.profile || {}) },
         decor:   { ...DEF.decor,    ...(s.decor   || {}) },
-        name:     s.name     || null,
-        emotions: s.emotions || [],
-        diary:    s.diary    || [],
+        name:          s.name          || null,
+        charColorIdx:  s.charColorIdx  ?? null,
+        lastFeedDate:  s.lastFeedDate  || null,
+        todayFeedCount:s.todayFeedCount ?? 0,
+        emotions:   s.emotions   || [],
+        diary:      s.diary      || [],
+        seenEvents:  s.seenEvents  || [],
+        trees:       s.trees       || [],
+        currentTree: s.currentTree || null,
       };
     }
   } catch(e){}
-  return { ...DEF, profile:{...DEF.profile}, decor:{...DEF.decor}, emotions:[], diary:[], name:null };
+  return { ...DEF, profile:{...DEF.profile}, decor:{...DEF.decor}, emotions:[], diary:[], seenEvents:[], trees:[], currentTree:null, name:null };
 }
 function save() { localStorage.setItem('snj', JSON.stringify(G)); }
 function today() {
@@ -812,25 +873,28 @@ function init() {
   document.getElementById('emo-date').textContent =
     `${d.getFullYear()}년 ${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]}요일)`;
   buildEmoGrid('emo-grid', 'start');
-
-  if (!G.name) {
-    document.getElementById('screen-name').classList.remove('hidden');
-    return;
-  }
-  if (G.lastCheckin === today()) enterRoom();
+  // 인증은 Supabase 모듈에서 처리 — 여기서는 아무것도 안 함
 }
 
-function onNameInput() {
-  const val = document.getElementById('name-input').value.trim();
-  document.getElementById('name-btn').disabled = val.length === 0;
+/* 탭 전환 */
+function switchTab(tab) {
+  const isSignup = tab === 'signup';
+  document.getElementById('nick-row').classList.toggle('hidden', !isSignup);
+  document.getElementById('auth-btn').textContent = isSignup ? '회원가입' : '로그인';
+  document.getElementById('auth-btn').onclick = isSignup ? doSignUp : doLogin;
+  const activeStyle  = 'flex:1;padding:10px;border-radius:12px;border:2px solid var(--accent);background:var(--accent);color:#fff;font-weight:700;cursor:pointer;font-family:inherit;font-size:14px;';
+  const inactiveStyle = 'flex:1;padding:10px;border-radius:12px;border:2px solid var(--beige);background:var(--cream);color:var(--brown);font-weight:600;cursor:pointer;font-family:inherit;font-size:14px;';
+  document.getElementById('tab-login').style.cssText  = isSignup ? inactiveStyle : activeStyle;
+  document.getElementById('tab-signup').style.cssText = isSignup ? activeStyle   : inactiveStyle;
 }
 
-function confirmName() {
-  const val = document.getElementById('name-input').value.trim();
-  if (!val) return;
-  G.name = val;
-  save();
-  document.getElementById('screen-name').classList.add('hidden');
+function showAuthError(msg) {
+  const el = document.getElementById('auth-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideAuthError() {
+  document.getElementById('auth-error').style.display = 'none';
 }
 
 function applyName(text) {
@@ -885,6 +949,7 @@ document.getElementById('enter-btn').addEventListener('click', () => {
 });
 
 function enterRoom() {
+  if (G.charColorIdx === null || G.charColorIdx === undefined) { G.charColorIdx = Math.floor(Math.random() * 7); save(); }
   document.getElementById('screen-emotion').classList.add('hidden');
   document.getElementById('screen-room').classList.remove('hidden');
   updateRoom();
@@ -938,18 +1003,7 @@ function updateRoom() {
   document.getElementById('stage-nm').textContent   = `${st.label} ${st.icon}`;
   document.getElementById('stage-desc').textContent = st.desc;
 
-  const cb = document.getElementById('char-body');
-  cb.className = `char-body lv${G.lv}`;
-
-  if (G.lv === 8 && G.type && TYPES[G.type]) {
-    const t = TYPES[G.type];
-    const blob = document.getElementById('char-blob');
-    blob.style.background = `radial-gradient(circle at 40% 40%, ${t.c1} 0%, ${t.c2} 100%)`;
-    blob.style.boxShadow  = `0 0 38px ${t.glow}`;
-    document.getElementById('char-name').textContent = t.name;
-  } else {
-    document.getElementById('char-name').textContent = G.name || '나다움';
-  }
+  renderChar();
 
   const recent = G.emotions.slice(-8).reverse();
   const chips  = document.getElementById('chips');
@@ -1028,6 +1082,8 @@ function logDiary(entry) {
    FEED MODAL
 ══════════════════════════════════ */
 function openFeed() {
+  if (G.lastFeedDate !== today()) { G.todayFeedCount = 0; G.lastFeedDate = today(); }
+  if (G.todayFeedCount >= 3) { toast('오늘은 충분히 먹였어요 🌙'); return; }
   feedPick = null;
   document.getElementById('feed-ok').disabled = true;
   buildEmoGrid('feed-grid', 'feed');
@@ -1035,8 +1091,11 @@ function openFeed() {
 }
 function confirmFeed() {
   if (!feedPick) return;
+  if (G.lastFeedDate !== today()) { G.todayFeedCount = 0; G.lastFeedDate = today(); }
+  if (G.todayFeedCount >= 3) { toast('오늘은 충분히 먹였어요 🌙'); return; }
+  G.todayFeedCount++;
   applyEmo(feedPick, 1);
-  addXP(8);
+  addXP(3);
   G.lastPlayed = Date.now();
   logDiary({ type:'feed', emo:feedPick });
   save();
@@ -1044,8 +1103,8 @@ function confirmFeed() {
   document.getElementById('modal-feed').classList.add('hidden');
   updateRoom();
   const em = EMOTIONS.find(e => e.id === feedPick);
-  xpPop('+8 XP');
-  toast(`${em.ico} ${em.lbl} 감정을 먹였어요! +8 XP`);
+  xpPop('+3 XP');
+  toast(`${em.ico} ${em.lbl} 감정을 먹였어요! +3 XP (${G.todayFeedCount}/3)`);
   feedPick = null;
 }
 
@@ -1056,8 +1115,10 @@ function maybeEvent() {
   if (G.lastEventDate !== today()) { G.todayEventCount = 0; G.lastEventDate = today(); }
   if (G.todayEventCount >= 2) return;
   if (Math.random() > 0.6) return;
-  const pool = EVENTS.filter(e => e.stage <= G.lv);
-  if (!pool.length) return;
+  const available = EVENTS.filter(e => e.stage <= G.lv);
+  if (!available.length) return;
+  let pool = available.filter(e => !G.seenEvents.includes(e.title));
+  if (!pool.length) { G.seenEvents = []; pool = available; }
   G.todayEventCount++;
   save();
   showEvent(pool[Math.floor(Math.random() * pool.length)]);
@@ -1087,6 +1148,7 @@ function confirmEvent() {
   if (!selChoice && !custom) { toast('선택지를 고르거나 직접 적어주세요 💭'); return; }
   const choice = custom || selChoice;
   logDiary({ type:'event', title:curEvent.title, choice });
+  if (!G.seenEvents.includes(curEvent.title)) G.seenEvents.push(curEvent.title);
   addXP(curEvent.xp);
   save();
   updateRoom();
@@ -1179,6 +1241,378 @@ function renderDiary() {
 }
 
 /* ══════════════════════════════════
+   TREE LEAF GAME
+══════════════════════════════════ */
+/* 잎 위치 — 왕관부터 바깥으로 퍼짐 (1번이 가장 먼저 달림) */
+const LEAF_SPOTS = [
+  {x:120, y:40,  rot:0  },  //  1 정상
+  {x:107, y:50,  rot:-18},  //  2 정상 좌
+  {x:133, y:50,  rot:18 },  //  3 정상 우
+  {x:90,  y:62,  rot:-28},  //  4 중상 좌
+  {x:150, y:62,  rot:28 },  //  5 중상 우
+  {x:75,  y:72,  rot:-40},  //  6 중 좌
+  {x:165, y:72,  rot:40 },  //  7 중 우
+  {x:57,  y:86,  rot:-52},  //  8 중하 좌
+  {x:183, y:86,  rot:52 },  //  9 중하 우
+  {x:38,  y:98,  rot:-62},  // 10 하 좌
+  {x:202, y:98,  rot:62 },  // 11 하 우
+  {x:22,  y:112, rot:-70},  // 12 최하 좌
+  {x:218, y:112, rot:70 },  // 13 최하 우
+  {x:68,  y:100, rot:-35},  // 14 하 중좌
+  {x:172, y:100, rot:35 },  // 15 하 중우
+];
+
+const LEAF_COLOR_MAP = {
+  happy:'#F5C518', excited:'#FFD700', proud:'#F4B942', wonder:'#FFE066',
+  calm:'#6BCB77',  grateful:'#52B788',
+  sad:'#74B9E4',   lonely:'#5B9BC8', tired:'#90B8D8',
+  anxious:'#A78BD4', flutter:'#9B8DD4',
+  angry:'#E8554E',
+};
+
+function leafColor() {
+  const last = G.emotions.length ? G.emotions[G.emotions.length - 1] : null;
+  return last ? (LEAF_COLOR_MAP[last.id] || '#8BAA76') : '#8BAA76';
+}
+
+function treeSVG(leaves, small) {
+  const W  = small ? 132 : 210;
+  const H  = small ? 115 : 183;
+  const TC = '#7A5228';  /* 기둥 */
+  const BC = '#8B6338';  /* 굵은 가지 */
+  const SC = '#9A7450';  /* 세 가지 */
+  const TW = '#A8845C';  /* 잔가지 */
+
+  /* ── 기둥 (아래가 두껍고 위로 가늘어짐) ── */
+  const trunk = `
+    <path d="M109,218 C110,198 113,180 116,162 L124,162 C127,180 130,198 131,218Z" fill="${TC}"/>
+    <path d="M116,215 Q118,195 117,178" stroke="rgba(0,0,0,.10)" stroke-width="2" fill="none"/>
+    <ellipse cx="120" cy="217" rx="25" ry="6" fill="${TC}" opacity=".35"/>
+  `;
+
+  /* ── 주요 3개 가지 (기둥에서 Y자 분기) ── */
+  const mainBranches = `
+    <path d="M120,165 Q95,152 72,136 Q52,122 38,108" stroke="${BC}" stroke-width="10" fill="none" stroke-linecap="round"/>
+    <path d="M120,163 Q120,145 120,125 Q120,108 120,88"          stroke="${BC}" stroke-width="8"  fill="none" stroke-linecap="round"/>
+    <path d="M120,165 Q145,152 168,136 Q188,122 202,108"         stroke="${BC}" stroke-width="10" fill="none" stroke-linecap="round"/>
+  `;
+
+  /* ── 중간 가지 (주요 가지에서 분기) ── */
+  const subBranches = `
+    <!-- 왼쪽 가지 분기 -->
+    <path d="M62,132 Q58,112 57,96"                stroke="${SC}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M48,120 Q36,108 22,112"               stroke="${SC}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- 중앙 가지 분기 -->
+    <path d="M120,110 Q104,96 90,76"               stroke="${SC}" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+    <path d="M120,102 Q120,78 120,54"              stroke="${SC}" stroke-width="5"   fill="none" stroke-linecap="round"/>
+    <path d="M120,110 Q136,96 150,76"              stroke="${SC}" stroke-width="5.5" fill="none" stroke-linecap="round"/>
+    <!-- 오른쪽 가지 분기 -->
+    <path d="M178,132 Q182,112 183,96"             stroke="${SC}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M192,120 Q204,108 218,112"            stroke="${SC}" stroke-width="5" fill="none" stroke-linecap="round"/>
+  `;
+
+  /* ── 잔가지 (잎이 달리는 끝단) ── */
+  const twigs = `
+    <!-- 정상 잔가지 -->
+    <path d="M120,56 Q114,48 107,50"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M120,56 Q120,46 120,40"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M120,56 Q126,48 133,50"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- 중상 잔가지 -->
+    <path d="M90,78 Q90,70 90,62"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M150,78 Q150,70 150,62"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 중 잔가지 -->
+    <path d="M78,92 Q76,82 75,72"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M162,92 Q164,82 165,72"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 중하 잔가지 -->
+    <path d="M57,98 Q57,92 57,86"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M183,98 Q183,92 183,86"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 하 잔가지 -->
+    <path d="M38,110 Q38,104 38,98"                stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M202,110 Q202,104 202,98"             stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 최하 잔가지 -->
+    <path d="M26,114 Q24,113 22,112"               stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <path d="M214,114 Q216,113 218,112"            stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 하 중좌우 잔가지 -->
+    <path d="M57,102 Q62,101 68,100"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M183,102 Q178,101 172,100"            stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  `;
+
+  /* ── 잎 (자연스러운 SVG leaf path) ── */
+  const LP = 'M0,12 C10,5 11,-7 0,-14 C-11,-7 -10,5 0,12Z'; /* 잎 실루엣 */
+  const scales = [1.08,1.0,1.08, 1.05,1.05, 1.0,1.0, 1.05,1.05, 1.08,1.08, 1.0,1.0, 1.0,1.0];
+
+  const leafEls = leaves.map((leaf, i) => {
+    const sp = LEAF_SPOTS[i];
+    if (!sp) return '';
+    const sc = scales[i] || 1.0;
+    /* 어두운 잎맥선으로 자연감 추가 */
+    return `<g transform="translate(${sp.x},${sp.y}) rotate(${sp.rot}) scale(${sc})">
+      <path d="${LP}" fill="${leaf.color}" opacity=".92"/>
+      <line x1="0" y1="11" x2="0" y2="-13" stroke="rgba(0,0,0,.14)" stroke-width="0.9" stroke-linecap="round"/>
+    </g>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 240 222" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    ${trunk}${mainBranches}${subBranches}${twigs}${leafEls}
+  </svg>`;
+}
+
+function openTree() {
+  if (!G.currentTree) { G.currentTree = { startDate: today(), leaves: [] }; save(); }
+  renderTreePanel();
+  switchTreeTab('cur');
+  document.getElementById('modal-tree').classList.remove('hidden');
+}
+
+function switchTreeTab(tab) {
+  const cur = tab === 'cur';
+  document.getElementById('tab-cur').className = 'tree-tab' + (cur  ? ' sel' : '');
+  document.getElementById('tab-gal').className = 'tree-tab' + (!cur ? ' sel' : '');
+  document.getElementById('tree-panel-cur').classList.toggle('hidden', !cur);
+  document.getElementById('tree-panel-gal').classList.toggle('hidden',  cur);
+  if (!cur) renderGallery();
+}
+
+function renderTreePanel() {
+  const ct = G.currentTree || { startDate: today(), leaves: [] };
+  const count      = ct.leaves.length;
+  const done       = count >= 15;
+  const addedToday = count > 0 && ct.leaves[count - 1].date === today();
+
+  document.getElementById('tree-prog').textContent = `잎 ${count} / 15`;
+  document.getElementById('tree-wrap').innerHTML   = treeSVG(ct.leaves, false);
+  document.getElementById('tree-done-msg').classList.toggle('hidden', !done);
+
+  const btn = document.getElementById('tree-add-btn');
+  if (addedToday && !done) {
+    btn.textContent = '오늘 이미 나뭇잎을 달았어요 🍃';
+    btn.disabled = true;
+  } else if (done) {
+    btn.textContent = '🌱 새 나무 시작하기';
+    btn.disabled = false;
+    btn.onclick = startNewTree;
+  } else {
+    btn.textContent = '🍃 오늘의 나뭇잎 달기';
+    btn.disabled = false;
+    btn.onclick = addTreeLeaf;
+  }
+}
+
+function addTreeLeaf() {
+  if (!G.currentTree) G.currentTree = { startDate: today(), leaves: [] };
+  const ct = G.currentTree;
+  if (ct.leaves.length >= 15) return;
+  if (ct.leaves.length > 0 && ct.leaves[ct.leaves.length - 1].date === today()) return;
+
+  ct.leaves.push({ date: today(), color: leafColor() });
+
+  if (ct.leaves.length >= 15) {
+    if (!G.trees) G.trees = [];
+    G.trees.push({ startDate: ct.startDate, endDate: today(), leaves: ct.leaves.slice() });
+    G.currentTree = { startDate: today(), leaves: [] };
+    addXP(10); save(); updateRoom();
+    renderTreePanel();
+    xpPop('+10 XP');
+    toast('🌳 나무가 완성됐어요! +10 XP');
+  } else {
+    save();
+    renderTreePanel();
+    toast(`🍃 나뭇잎을 달았어요! (${ct.leaves.length}/15)`);
+  }
+}
+
+function startNewTree() {
+  G.currentTree = { startDate: today(), leaves: [] };
+  save();
+  renderTreePanel();
+}
+
+function renderGallery() {
+  const el = document.getElementById('tree-gallery');
+  if (!G.trees || !G.trees.length) {
+    el.innerHTML = '<div class="gal-empty">완성된 나무가 아직 없어요 🌱<br>나뭇잎 15개를 달면 나무가 완성돼요</div>';
+    return;
+  }
+  el.innerHTML = '<div class="gal-grid">' + G.trees.slice().reverse().map(tree => {
+    const d = new Date(tree.endDate + 'T00:00:00');
+    return `<div class="gal-item">
+      ${treeSVG(tree.leaves, true)}
+      <div class="gal-date">${d.getMonth()+1}월 ${d.getDate()}일 완성</div>
+    </div>`;
+  }).join('') + '</div>';
+}
+
+/* ══════════════════════════════════
+   CHARACTER RENDER SYSTEM
+══════════════════════════════════ */
+const RAINBOW = [
+  ['#E53935','#EF9A9A'], // 빨강
+  ['#E64A19','#FFAB91'], // 주황
+  ['#F9A825','#FFE082'], // 노랑
+  ['#2E7D32','#A5D6A7'], // 초록
+  ['#1565C0','#90CAF9'], // 파랑
+  ['#283593','#9FA8DA'], // 남색
+  ['#6A1B9A','#CE93D8'], // 보라
+];
+
+function typeGroup() {
+  if (!G.type) return 'bubble';
+  if (G.type.startsWith('warm_intense')) return 'flame';
+  if (G.type.startsWith('warm_gentle'))  return 'flower';
+  if (G.type.startsWith('cool_intense')) return 'crystal';
+  return 'bubble';
+}
+
+function rcPair() {
+  return RAINBOW[G.charColorIdx ?? 0] || RAINBOW[0];
+}
+
+function slimeSVG(lv) {
+  const [base, lite] = rcPair();
+  const rx   = 28 + lv * 6;
+  const ry   = 24 + lv * 5;
+  const blur = Math.max(0, (3 - lv) * 2.8);
+  const sat  = 0.28 + lv * 0.24;
+  const eyes = lv >= 2
+    ? `<circle cx="37" cy="49" r="3.5" fill="rgba(0,0,0,.45)"/><circle cx="53" cy="49" r="3.5" fill="rgba(0,0,0,.45)"/>`
+    : '';
+  return `<svg class="char-svg" viewBox="0 0 90 90" width="90" height="90"
+    style="filter:blur(${blur}px) saturate(${sat});" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="sg${lv}" cx="38%" cy="34%" r="64%">
+      <stop offset="0%" stop-color="${lite}"/>
+      <stop offset="100%" stop-color="${base}"/>
+    </radialGradient></defs>
+    <ellipse cx="45" cy="52" rx="${rx}" ry="${ry}" fill="url(#sg${lv})"/>
+    <ellipse cx="32" cy="37" rx="9" ry="7" fill="rgba(255,255,255,.34)" transform="rotate(-20 32 37)"/>
+    ${eyes}
+  </svg>`;
+}
+
+function hintedSVG(grp) {
+  const [base, lite] = rcPair();
+  let hint = '';
+  if (grp === 'flame')   hint = `<path class="svg-flame" d="M45,22 Q51,9 45,3 Q39,9 45,22" fill="${lite}" opacity=".52"/>`;
+  if (grp === 'crystal') hint = `<polygon points="45,14 72,38 72,62 45,76 18,62 18,38" fill="none" stroke="${lite}" stroke-width="2" opacity=".38"/>`;
+  if (grp === 'flower')  hint = `<ellipse cx="45" cy="18" rx="9" ry="16" fill="${lite}" opacity=".34" transform="rotate(0 45 45)"/>`;
+  if (grp === 'bubble')  hint = `<circle cx="45" cy="46" r="39" fill="none" stroke="${lite}" stroke-width="2" opacity=".38"/>`;
+  return `<svg class="char-svg" viewBox="0 0 90 90" width="90" height="90"
+    style="filter:blur(1px) saturate(.7);" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="sh4" cx="38%" cy="34%" r="64%">
+      <stop offset="0%" stop-color="${lite}"/>
+      <stop offset="100%" stop-color="${base}"/>
+    </radialGradient></defs>
+    <ellipse cx="45" cy="52" rx="42" ry="37" fill="url(#sh4)"/>
+    ${hint}
+    <ellipse cx="32" cy="37" rx="9" ry="7" fill="rgba(255,255,255,.32)" transform="rotate(-20 32 37)"/>
+    <circle cx="37" cy="49" r="3.5" fill="rgba(0,0,0,.45)"/>
+    <circle cx="53" cy="49" r="3.5" fill="rgba(0,0,0,.45)"/>
+  </svg>`;
+}
+
+function typeSVG(grp, c1, c2, glow, lv, final) {
+  const uid  = `tc${lv}`;
+  const blur = lv === 5 ? 'filter:blur(.7px) saturate(.8);' : lv === 6 ? 'filter:saturate(.95);' : '';
+
+  if (grp === 'flame') {
+    const inner = final
+      ? `<path class="svg-flame" d="M45,62 C37,53 34,42 39,31 C41,25 44,29 45,23 C46,29 49,25 51,31 C56,42 53,53 45,62Z" fill="${c1}" opacity=".5"/>`
+      : '';
+    return `<svg class="char-svg svg-flame" viewBox="0 0 90 90" width="90" height="90" style="${blur}" xmlns="http://www.w3.org/2000/svg">
+      <defs><radialGradient id="${uid}" cx="50%" cy="78%" r="68%">
+        <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
+      </radialGradient></defs>
+      <path d="M45,88 C22,76 10,55 17,36 C22,23 31,27 35,16 C38,8 42,2 45,0 C48,2 52,8 55,16 C59,27 68,23 73,36 C80,55 68,76 45,88Z" fill="url(#${uid})"/>
+      <ellipse cx="33" cy="28" rx="7" ry="10" fill="rgba(255,255,255,.22)" transform="rotate(-20 33 28)"/>
+      ${inner}
+    </svg>`;
+  }
+
+  if (grp === 'flower') {
+    const petals = [0,60,120,180,240,300].map((r, i) =>
+      `<ellipse cx="45" cy="21" rx="10" ry="22" fill="${c1}" opacity=".86"
+        transform="rotate(${r} 45 45)"
+        style="animation:charBubble ${2.0+i*.14}s ease-in-out infinite;animation-delay:${i*.14}s;transform-origin:45px 45px;transform-box:fill-box;"/>`
+    ).join('');
+    return `<svg class="char-svg" viewBox="0 0 90 90" width="90" height="90" style="${blur}" xmlns="http://www.w3.org/2000/svg">
+      <defs><radialGradient id="${uid}" cx="50%" cy="50%" r="50%">
+        <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
+      </radialGradient></defs>
+      ${petals}
+      <circle cx="45" cy="45" r="18" fill="url(#${uid})"/>
+      <circle cx="38" cy="39" r="5" fill="rgba(255,255,255,.3)"/>
+    </svg>`;
+  }
+
+  if (grp === 'crystal') {
+    const star = final
+      ? `<polygon class="svg-crystal" points="45,18 47,26 56,26 49,31 52,40 45,35 38,40 41,31 34,26 43,26" fill="rgba(255,255,255,.55)"/>`
+      : '';
+    return `<svg class="char-svg svg-crystal" viewBox="0 0 90 90" width="90" height="90" style="${blur}" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="${uid}" x1="10%" y1="0%" x2="90%" y2="100%">
+        <stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/>
+      </linearGradient></defs>
+      <polygon points="45,4 80,24 80,66 45,86 10,66 10,24" fill="url(#${uid})"/>
+      <polygon points="45,4 80,24 45,45" fill="rgba(255,255,255,.26)"/>
+      <polygon points="10,24 45,4 45,45" fill="rgba(255,255,255,.12)"/>
+      <polygon points="45,45 80,24 80,66" fill="rgba(0,0,0,.09)"/>
+      ${star}
+    </svg>`;
+  }
+
+  /* bubble */
+  return `<svg class="char-svg" viewBox="0 0 90 90" width="90" height="90" style="${blur}" xmlns="http://www.w3.org/2000/svg">
+    <defs><radialGradient id="${uid}" cx="34%" cy="30%" r="68%">
+      <stop offset="0%" stop-color="${c1}" stop-opacity=".52"/>
+      <stop offset="100%" stop-color="${c2}" stop-opacity=".32"/>
+    </radialGradient></defs>
+    <circle class="svg-bubble" cx="45" cy="48" r="36" fill="url(#${uid})" stroke="${c1}" stroke-width="1.5" stroke-opacity=".6"/>
+    <circle class="svg-bubble" cx="26" cy="33" r="18" fill="${c1}" fill-opacity=".18" stroke="${c1}" stroke-width="1" stroke-opacity=".38" style="animation-delay:.42s"/>
+    <circle class="svg-bubble" cx="64" cy="58" r="14" fill="${c1}" fill-opacity=".14" stroke="${c1}" stroke-width="1" stroke-opacity=".32" style="animation-delay:.85s"/>
+    <circle cx="32" cy="29" r="6" fill="rgba(255,255,255,.42)"/>
+    <circle cx="28" cy="26" r="3" fill="rgba(255,255,255,.65)"/>
+  </svg>`;
+}
+
+function particlesHTML(color) {
+  return `<div class="char-particles">
+    <span style="background:${color};left:14%;animation-delay:0s;animation-duration:1.7s;bottom:60%"></span>
+    <span style="background:${color};left:76%;animation-delay:.58s;animation-duration:2.0s;bottom:55%"></span>
+    <span style="background:${color};left:46%;animation-delay:1.12s;animation-duration:1.85s;bottom:65%"></span>
+  </div>`;
+}
+
+function renderChar() {
+  const lv  = G.lv;
+  const cb  = document.getElementById('char-body');
+  const nm  = document.getElementById('char-name');
+  const t   = G.type && TYPES[G.type] ? TYPES[G.type] : null;
+  const grp = typeGroup();
+  const c1  = t ? t.c1 : rcPair()[0];
+  const c2  = t ? t.c2 : rcPair()[1];
+
+  cb.className = 'char-body';
+  cb.style.filter = '';
+
+  if (lv <= 3) {
+    cb.innerHTML = slimeSVG(lv);
+    nm.textContent = G.name || '나다움';
+  } else if (lv === 4) {
+    cb.innerHTML = hintedSVG(grp);
+    nm.textContent = G.name || '나다움';
+  } else if (lv <= 6) {
+    cb.innerHTML = typeSVG(grp, c1, c2, t?.glow, lv, false);
+    nm.textContent = G.name || '나다움';
+  } else if (lv === 7) {
+    cb.innerHTML = typeSVG(grp, c1, c2, t?.glow, lv, false) + particlesHTML(c1);
+    nm.textContent = G.name || '나다움';
+  } else {
+    cb.innerHTML = typeSVG(grp, c1, c2, t?.glow, lv, true) + particlesHTML(c1);
+    if (t) cb.style.filter = `drop-shadow(0 0 10px ${t.glow})`;
+    nm.textContent = t ? t.name : (G.name || '나다움');
+  }
+}
+
+/* ══════════════════════════════════
    HELPERS
 ══════════════════════════════════ */
 function bgClose(e, id) { if (e.target.id === id) document.getElementById(id).classList.add('hidden'); }
@@ -1248,9 +1682,9 @@ function balloonRelease(e) {
           setTimeout(() => {
             document.getElementById('modal-balloon').classList.add('hidden');
             document.getElementById('balloon-btn').disabled = false;
-            addXP(10); save(); updateRoom();
-            xpPop('+10 XP');
-            toast('마음 풍선 불기 완료! +10 XP 🎈');
+            addXP(15); save(); updateRoom();
+            xpPop('+15 XP');
+            toast('마음 풍선 불기 완료! +15 XP 🎈');
           }, 1600);
         } else {
           document.getElementById('balloon-hint').textContent = `${bRounds}번 완료! 한 번 더 해볼까요? 💪`;
@@ -1332,9 +1766,9 @@ function finishSort() {
 
 function closeSortDone() {
   document.getElementById('modal-sort').classList.add('hidden');
-  addXP(12); save(); updateRoom();
-  xpPop('+12 XP');
-  toast('생각 분리수거 완료! +12 XP ♻️');
+  addXP(18); save(); updateRoom();
+  xpPop('+18 XP');
+  toast('생각 분리수거 완료! +18 XP ♻️');
 }
 
 function closeSort() {
@@ -1344,6 +1778,86 @@ function closeSort() {
 }
 
 init();
+</script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+  const SUPABASE_URL  = 'https://leailitbqqbkcojugldj.supabase.co';
+  const SUPABASE_KEY  = 'sb_publishable_X-vGpq0HckjICPU1nCzMkw_exf-bUC4';
+  const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  /* ── 회원가입 ── */
+  window.doSignUp = async () => {
+    hideAuthError();
+    const id   = document.getElementById('auth-id').value.trim();
+    const nick = document.getElementById('auth-nick').value.trim();
+    const pw   = document.getElementById('auth-pw').value.trim();
+
+    if (!id || !nick || !pw) return showAuthError('모든 항목을 입력해주세요');
+    if (pw.length < 6)       return showAuthError('비밀번호는 6자 이상이어야 해요');
+
+    const email = id + '@nadareum.app';
+
+    const { data, error } = await sb.auth.signUp({ email, password: pw });
+    if (error) {
+      if (error.message.includes('already')) showAuthError('이미 사용 중인 아이디예요');
+      else showAuthError('오류: ' + error.message);
+      return;
+    }
+
+    // profiles 테이블에 닉네임 저장
+    await sb.from('profiles').insert({ id: data.user.id, nickname: nick, xp: 0 });
+
+    G.name = nick;
+    if (G.charColorIdx === null || G.charColorIdx === undefined) G.charColorIdx = Math.floor(Math.random() * 7);
+    save();
+    enterAfterAuth(nick);
+  };
+
+  /* ── 로그인 ── */
+  window.doLogin = async () => {
+    hideAuthError();
+    const id = document.getElementById('auth-id').value.trim();
+    const pw = document.getElementById('auth-pw').value.trim();
+    if (!id || !pw) return showAuthError('아이디와 비밀번호를 입력해주세요');
+
+    const email = id + '@nadareum.app';
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if (error) { showAuthError('아이디 또는 비밀번호가 틀렸어요'); return; }
+
+    // profiles에서 닉네임·XP 불러오기
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+    if (profile) {
+      G.name = profile.nickname;
+      G.xp   = profile.xp ?? G.xp;
+      save();
+    }
+    enterAfterAuth(G.name);
+  };
+
+  /* ── 로그인 후 화면 전환 ── */
+  function enterAfterAuth(nick) {
+    document.getElementById('char-name').textContent = nick;
+    document.getElementById('screen-auth').classList.add('hidden');
+
+    if (G.lastCheckin === today()) {
+      enterRoom();
+    } else {
+      document.getElementById('screen-emotion').classList.remove('hidden');
+    }
+  }
+
+  /* ── 이미 로그인된 세션 자동 복원 ── */
+  const { data: { session } } = await sb.auth.getSession();
+  if (session) {
+    const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    if (profile) {
+      G.name = profile.nickname;
+      G.xp   = profile.xp ?? G.xp;
+      save();
+    }
+    enterAfterAuth(G.name || '나다움');
+  }
 </script>
 </body>
 </html>

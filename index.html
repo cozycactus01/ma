@@ -523,7 +523,7 @@
   <div class="sheet">
     <div class="handle"></div>
     <div class="modal-title">방 꾸미기 🪴</div>
-    <div class="modal-sub">나만의 방을 꾸며보세요 · XP로 해금돼요</div>
+    <div class="modal-sub">나만의 방을 꾸며보세요 · ⭐로 구매해요</div>
     <div class="decor-section">
       <div class="decor-section-title">🎨 벽지</div>
       <div class="decor-opts" id="decor-wall"></div>
@@ -846,28 +846,28 @@ const EVENTS = [
 
 const DECORS = {
   wall: [
-    { id:0, name:'따뜻한 아이보리', ico:'🤍', unlock:0   },
-    { id:1, name:'봄빛 초록',       ico:'💚', unlock:30  },
-    { id:2, name:'달밤 라벤더',     ico:'💜', unlock:80  },
-    { id:3, name:'따뜻한 모래빛',   ico:'🤎', unlock:120 },
-    { id:4, name:'저녁노을 핑크',   ico:'🩷', unlock:180 },
-    { id:5, name:'포근한 머스타드', ico:'🧡', unlock:250 },
+    { id:0, name:'따뜻한 아이보리', ico:'🤍', stars:0  },
+    { id:1, name:'봄빛 초록',       ico:'💚', stars:3  },
+    { id:2, name:'달밤 라벤더',     ico:'💜', stars:8  },
+    { id:3, name:'따뜻한 모래빛',   ico:'🤎', stars:12 },
+    { id:4, name:'저녁노을 핑크',   ico:'🩷', stars:18 },
+    { id:5, name:'포근한 머스타드', ico:'🧡', stars:25 },
   ],
   light: [
-    { id:0, name:'맑은 햇살',     ico:'☀️', unlock:0   },
-    { id:1, name:'황금빛 저녁',   ico:'🌅', unlock:50  },
-    { id:2, name:'고요한 달빛',   ico:'🌙', unlock:150 },
-    { id:3, name:'따뜻한 캔들빛', ico:'🕯️', unlock:200 },
-    { id:4, name:'벽난로 불빛',   ico:'🔥', unlock:280 },
-    { id:5, name:'별이 빛나는 밤',ico:'⭐', unlock:350 },
+    { id:0, name:'맑은 햇살',     ico:'☀️', stars:0  },
+    { id:1, name:'황금빛 저녁',   ico:'🌅', stars:5  },
+    { id:2, name:'고요한 달빛',   ico:'🌙', stars:15 },
+    { id:3, name:'따뜻한 캔들빛', ico:'🕯️', stars:20 },
+    { id:4, name:'벽난로 불빛',   ico:'🔥', stars:28 },
+    { id:5, name:'별이 빛나는 밤',ico:'⭐', stars:35 },
   ],
   prop: [
-    { id:0, name:'없음',        ico:'◻️', unlock:0   },
-    { id:1, name:'봄꽃 화환',   ico:'🌸', unlock:40  },
-    { id:2, name:'별빛 모빌',   ico:'⭐', unlock:100 },
-    { id:3, name:'포근한 담요', ico:'🧸', unlock:150 },
-    { id:4, name:'따뜻한 머그컵',ico:'☕', unlock:220 },
-    { id:5, name:'작은 무드등', ico:'🪔', unlock:300 },
+    { id:0, name:'없음',         ico:'◻️', stars:0  },
+    { id:1, name:'봄꽃 화환',    ico:'🌸', stars:4  },
+    { id:2, name:'별빛 모빌',    ico:'⭐', stars:10 },
+    { id:3, name:'포근한 담요',  ico:'🧸', stars:15 },
+    { id:4, name:'따뜻한 머그컵',ico:'☕', stars:22 },
+    { id:5, name:'작은 무드등',  ico:'🪔', stars:30 },
   ],
 };
 
@@ -885,6 +885,7 @@ const DEF = {
   profile:{ w:0,c:0,i:0,g:0,d:0,s:0,cl:0,df:0 },
   type:null,
   decor:{ wall:0, light:0, prop:0 },
+  ownedDecor:{ wall:[0], light:[0], prop:[0] },
   diary:[],
   seenEvents:[],
   trees:[],
@@ -906,7 +907,12 @@ function load() {
       return {
         ...DEF, ...s,
         profile: { ...DEF.profile,  ...(s.profile || {}) },
-        decor:   { ...DEF.decor,    ...(s.decor   || {}) },
+        decor:      { ...DEF.decor,       ...(s.decor      || {}) },
+        ownedDecor: {
+          wall:  s.ownedDecor?.wall  || [0],
+          light: s.ownedDecor?.light || [0],
+          prop:  s.ownedDecor?.prop  || [0],
+        },
         name:          s.name          || null,
         charColorIdx:  s.charColorIdx  ?? null,
         stars:           s.stars           ?? 0,
@@ -1250,11 +1256,12 @@ function renderDecorModal() {
   ['wall','light','prop'].forEach(type => {
     const container = document.getElementById(`decor-${type}`);
     container.innerHTML = DECORS[type].map(opt => {
-      const isSel    = pendDecor[type] === opt.id;
-      const isLocked = G.xp < opt.unlock;
-      const reqLabel = isSel ? '✓ 선택됨' : isLocked ? `🔒 ${opt.unlock} XP` : '해금됨';
-      return `<div class="decor-opt${isSel?' sel':''}${isLocked?' locked':''}"
-        onclick="${isLocked ? `toast('${opt.unlock} XP가 필요해요 🔒')` : `selectDecor('${type}',${opt.id})`}">
+      const isSel   = pendDecor[type] === opt.id;
+      const isOwned = opt.stars === 0 || G.ownedDecor[type].includes(opt.id);
+      const reqLabel = isSel ? '✓ 선택됨' : isOwned ? '보유 중' : `⭐ ${opt.stars}`;
+      const locked   = !isOwned;
+      return `<div class="decor-opt${isSel?' sel':''}${locked?' locked':''}"
+        onclick="selectDecor('${type}',${opt.id})">
         <span class="d-ico">${opt.ico}</span>
         <span class="d-name">${opt.name}</span>
         <span class="d-req">${reqLabel}</span>
@@ -1263,6 +1270,16 @@ function renderDecorModal() {
   });
 }
 function selectDecor(type, id) {
+  const opt     = DECORS[type].find(o => o.id === id);
+  const isOwned = opt.stars === 0 || G.ownedDecor[type].includes(id);
+  if (!isOwned) {
+    if (G.stars < opt.stars) { toast('별이 부족해요 ⭐'); return; }
+    G.stars -= opt.stars;
+    G.ownedDecor[type].push(id);
+    document.getElementById('star-badge').textContent = `⭐ ${G.stars}`;
+    toast(`🪴 ${opt.name} 구매 완료! -${opt.stars}⭐`);
+    save();
+  }
   pendDecor[type] = id;
   renderDecorModal();
 }

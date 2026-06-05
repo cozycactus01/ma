@@ -359,6 +359,11 @@
 
       <button id="auth-btn" class="enter-btn" onclick="doLogin()">로그인</button>
     </div>
+
+    <button onclick="startGuest()"
+      style="margin-top:4px;background:none;border:none;color:var(--brown);font-size:14px;cursor:pointer;opacity:0.7;font-family:inherit;text-decoration:underline;">
+      🌿 게스트로 시작하기
+    </button>
   </div>
 
   <!-- EMOTION CHECK-IN -->
@@ -630,13 +635,13 @@ const EMOTIONS = [
 ];
 
 const STAGES = [
-  { lv:1, name:'씨앗',   label:'신뢰의 씨앗',    icon:'🌱', desc:'처음 세상과 만나는 시간. 따뜻한 감정이 신뢰를 키워요.',     need:30  },
-  { lv:2, name:'새싹',   label:'자라나는 새싹',   icon:'🌿', desc:'스스로 움직여보는 단계예요. 어떤 감정이든 괜찮아요.',       need:70  },
-  { lv:3, name:'봉오리', label:'피어나는 봉오리', icon:'🌸', desc:'나만의 방향을 찾아가는 시간이에요.',                         need:130 },
-  { lv:4, name:'꽃잎',   label:'열리는 꽃잎',     icon:'🌺', desc:'꾸준함이 아름다운 변화를 만들어요.',                        need:210 },
-  { lv:5, name:'꽃',     label:'피어난 꽃',       icon:'🌼', desc:'"나는 누구인가"를 천천히 느끼기 시작해요.',                 need:310 },
-  { lv:6, name:'열매',   label:'익어가는 열매',   icon:'🍑', desc:'깊은 연결의 소중함을 알아가는 시간이에요.',                 need:430 },
-  { lv:7, name:'나무',   label:'든든한 나무',     icon:'🌳', desc:'무언가를 만들고 나누고 싶어지는 단계예요.',                 need:580 },
+  { lv:1, name:'씨앗',   label:'신뢰의 씨앗',    icon:'🌱', desc:'처음 세상과 만나는 시간. 따뜻한 감정이 신뢰를 키워요.',     need:18  },
+  { lv:2, name:'새싹',   label:'자라나는 새싹',   icon:'🌿', desc:'스스로 움직여보는 단계예요. 어떤 감정이든 괜찮아요.',       need:42  },
+  { lv:3, name:'봉오리', label:'피어나는 봉오리', icon:'🌸', desc:'나만의 방향을 찾아가는 시간이에요.',                         need:78  },
+  { lv:4, name:'꽃잎',   label:'열리는 꽃잎',     icon:'🌺', desc:'꾸준함이 아름다운 변화를 만들어요.',                        need:126 },
+  { lv:5, name:'꽃',     label:'피어난 꽃',       icon:'🌼', desc:'"나는 누구인가"를 천천히 느끼기 시작해요.',                 need:186 },
+  { lv:6, name:'열매',   label:'익어가는 열매',   icon:'🍑', desc:'깊은 연결의 소중함을 알아가는 시간이에요.',                 need:258 },
+  { lv:7, name:'나무',   label:'든든한 나무',     icon:'🌳', desc:'무언가를 만들고 나누고 싶어지는 단계예요.',                 need:348 },
   { lv:8, name:'빛',     label:'온전한 빛',        icon:'✨', desc:'모든 감정이 하나로 모여 당신만의 빛이 됩니다.',             need:9999},
 ];
 
@@ -814,7 +819,7 @@ const DECORS = {
 ══════════════════════════════════ */
 const DEF = {
   lv:1, xp:0,
-  name: null, charColorIdx: null,
+  name: null, charColorIdx: null, isGuest: false,
   lastPlayed:null, lastCheckin:null,
   lastEventDate:null, todayEventCount:0,
   lastFeedDate:null,  todayFeedCount:0,
@@ -1112,16 +1117,11 @@ function confirmFeed() {
    EVENT MODAL — 60%, max 2/day
 ══════════════════════════════════ */
 function maybeEvent() {
-  if (G.lastEventDate !== today()) { G.todayEventCount = 0; G.lastEventDate = today(); }
-  if (G.todayEventCount >= 2) return;
-  if (Math.random() > 0.6) return;
-  const available = EVENTS.filter(e => e.stage <= G.lv);
-  if (!available.length) return;
-  let pool = available.filter(e => !G.seenEvents.includes(e.title));
-  if (!pool.length) { G.seenEvents = []; pool = available; }
-  G.todayEventCount++;
-  save();
-  showEvent(pool[Math.floor(Math.random() * pool.length)]);
+  const stageEvents = EVENTS.filter(e => e.stage === G.lv);
+  if (!stageEvents.length) return;
+  const next = stageEvents.find(e => !G.seenEvents.includes(e.title));
+  if (!next) return;
+  showEvent(next);
 }
 function showEvent(ev) {
   curEvent = ev; selChoice = null;
@@ -1243,23 +1243,23 @@ function renderDiary() {
 /* ══════════════════════════════════
    TREE LEAF GAME
 ══════════════════════════════════ */
-/* 잎 위치 — 왕관부터 바깥으로 퍼짐 (1번이 가장 먼저 달림) */
+/* 잎 위치 — 왕관부터 바깥으로 자연스럽게 퍼짐 (비대칭) */
 const LEAF_SPOTS = [
-  {x:120, y:40,  rot:0  },  //  1 정상
-  {x:107, y:50,  rot:-18},  //  2 정상 좌
-  {x:133, y:50,  rot:18 },  //  3 정상 우
-  {x:90,  y:62,  rot:-28},  //  4 중상 좌
-  {x:150, y:62,  rot:28 },  //  5 중상 우
-  {x:75,  y:72,  rot:-40},  //  6 중 좌
-  {x:165, y:72,  rot:40 },  //  7 중 우
-  {x:57,  y:86,  rot:-52},  //  8 중하 좌
-  {x:183, y:86,  rot:52 },  //  9 중하 우
-  {x:38,  y:98,  rot:-62},  // 10 하 좌
-  {x:202, y:98,  rot:62 },  // 11 하 우
-  {x:22,  y:112, rot:-70},  // 12 최하 좌
-  {x:218, y:112, rot:70 },  // 13 최하 우
-  {x:68,  y:100, rot:-35},  // 14 하 중좌
-  {x:172, y:100, rot:35 },  // 15 하 중우
+  {x:116, y:48,  rot:4  },  //  1 왕관 꼭대기
+  {x:104, y:57,  rot:-17},  //  2 왕관 좌
+  {x:130, y:54,  rot:22 },  //  3 왕관 우 (살짝 낮아 비대칭)
+  {x:88,  y:68,  rot:-30},  //  4 상부 좌
+  {x:151, y:65,  rot:28 },  //  5 상부 우
+  {x:70,  y:80,  rot:-44},  //  6 중부 좌
+  {x:167, y:86,  rot:46 },  //  7 중부 우 (더 낮음 — 비대칭)
+  {x:47,  y:91,  rot:-56},  //  8 하중부 좌
+  {x:187, y:97,  rot:49 },  //  9 하중부 우
+  {x:25,  y:99,  rot:-66},  // 10 하부 좌
+  {x:211, y:110, rot:57 },  // 11 하부 우
+  {x:15,  y:92,  rot:-72},  // 12 최좌 (왼쪽으로 내려가는 가지)
+  {x:222, y:106, rot:66 },  // 13 최우
+  {x:44,  y:110, rot:-52},  // 14 처진 가지 끝 (좌)
+  {x:198, y:118, rot:46 },  // 15 처진 가지 끝 (우)
 ];
 
 const LEAF_COLOR_MAP = {
@@ -1276,84 +1276,124 @@ function leafColor() {
 }
 
 function treeSVG(leaves, small) {
-  const W  = small ? 132 : 210;
-  const H  = small ? 115 : 183;
-  const TC = '#7A5228';  /* 기둥 */
-  const BC = '#8B6338';  /* 굵은 가지 */
-  const SC = '#9A7450';  /* 세 가지 */
-  const TW = '#A8845C';  /* 잔가지 */
+  const W  = small ? 134 : 214;
+  const H  = small ? 114 : 178;
+  /* 색상: 기둥→주가지→세가지→잔가지 순으로 밝아짐 */
+  const TK = '#5E3A18';
+  const M1 = '#7A5228';
+  const M2 = '#8B6336';
+  const S1 = '#9A7248';
+  const TW = '#AA8458';
 
-  /* ── 기둥 (아래가 두껍고 위로 가늘어짐) ── */
+  /* ── 기둥: 아래 두껍고 위로 가늘어짐, 약간 오른쪽 기울기 ── */
   const trunk = `
-    <path d="M109,218 C110,198 113,180 116,162 L124,162 C127,180 130,198 131,218Z" fill="${TC}"/>
-    <path d="M116,215 Q118,195 117,178" stroke="rgba(0,0,0,.10)" stroke-width="2" fill="none"/>
-    <ellipse cx="120" cy="217" rx="25" ry="6" fill="${TC}" opacity=".35"/>
+    <path d="M106,220 C109,196 112,178 115,162
+             L122,160 C126,178 128,196 130,220Z" fill="${TK}"/>
+    <ellipse cx="118" cy="218" rx="26" ry="6" fill="${TK}" opacity=".38"/>
   `;
 
-  /* ── 주요 3개 가지 (기둥에서 Y자 분기) ── */
-  const mainBranches = `
-    <path d="M120,165 Q95,152 72,136 Q52,122 38,108" stroke="${BC}" stroke-width="10" fill="none" stroke-linecap="round"/>
-    <path d="M120,163 Q120,145 120,125 Q120,108 120,88"          stroke="${BC}" stroke-width="8"  fill="none" stroke-linecap="round"/>
-    <path d="M120,165 Q145,152 168,136 Q188,122 202,108"         stroke="${BC}" stroke-width="10" fill="none" stroke-linecap="round"/>
+  /* ── 주요 가지 3개 — 완전 비대칭 각도, cubic bezier ──
+     왼쪽: 넓게 아래-왼쪽(40°), 오른쪽: 완만하게 수평(65°), 중앙: 수직에 가깝게 */
+  const main = `
+    <path d="M116,165 C94,152 72,138 52,125"
+          stroke="${M1}" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <path d="M52,125 C40,117 30,111 20,107"
+          stroke="${M1}" stroke-width="8.5" fill="none" stroke-linecap="round"/>
+    <path d="M118,162 C119,144 120,126 122,110"
+          stroke="${M1}" stroke-width="9.5" fill="none" stroke-linecap="round"/>
+    <path d="M120,168 C143,157 167,146 188,137"
+          stroke="${M1}" stroke-width="11" fill="none" stroke-linecap="round"/>
+    <path d="M188,137 C200,131 212,127 221,124"
+          stroke="${M1}" stroke-width="7.5" fill="none" stroke-linecap="round"/>
   `;
 
-  /* ── 중간 가지 (주요 가지에서 분기) ── */
-  const subBranches = `
-    <!-- 왼쪽 가지 분기 -->
-    <path d="M62,132 Q58,112 57,96"                stroke="${SC}" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <path d="M48,120 Q36,108 22,112"               stroke="${SC}" stroke-width="5" fill="none" stroke-linecap="round"/>
-    <!-- 중앙 가지 분기 -->
-    <path d="M120,110 Q104,96 90,76"               stroke="${SC}" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-    <path d="M120,102 Q120,78 120,54"              stroke="${SC}" stroke-width="5"   fill="none" stroke-linecap="round"/>
-    <path d="M120,110 Q136,96 150,76"              stroke="${SC}" stroke-width="5.5" fill="none" stroke-linecap="round"/>
-    <!-- 오른쪽 가지 분기 -->
-    <path d="M178,132 Q182,112 183,96"             stroke="${SC}" stroke-width="6" fill="none" stroke-linecap="round"/>
-    <path d="M192,120 Q204,108 218,112"            stroke="${SC}" stroke-width="5" fill="none" stroke-linecap="round"/>
+  /* ── 중간 가지 — 각도·길이 제각각 (비대칭) ── */
+  const sub = `
+    <!-- 왼쪽 두 줄기 (위로 올라가는 것 + 살짝 꺾이는 것) -->
+    <path d="M52,127 C46,114 40,103 36,94"
+          stroke="${M2}" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M52,127 C55,113 58,102 61,94"
+          stroke="${M2}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <!-- 왼쪽 더 먼 가지 (아래로 처지는 자연스러운 호) -->
+    <path d="M20,109 C17,103 16,98 15,93"
+          stroke="${M2}" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <!-- 중앙 세 방향 분기 (각도 모두 다름) -->
+    <path d="M122,110 C113,97 104,86 93,75"
+          stroke="${M2}" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <path d="M122,110 C121,93 119,77 117,64"
+          stroke="${M2}" stroke-width="6" fill="none" stroke-linecap="round"/>
+    <path d="M122,110 C131,97 140,86 149,77"
+          stroke="${M2}" stroke-width="6.5" fill="none" stroke-linecap="round"/>
+    <!-- 오른쪽: 수직 + 수평 두 방향으로 분기 (왼쪽보다 단순) -->
+    <path d="M188,139 C186,125 185,113 184,101"
+          stroke="${M2}" stroke-width="7" fill="none" stroke-linecap="round"/>
+    <path d="M188,139 C195,128 202,118 207,109"
+          stroke="${M2}" stroke-width="6" fill="none" stroke-linecap="round"/>
   `;
 
-  /* ── 잔가지 (잎이 달리는 끝단) ── */
+  /* ── 잔가지 — 각 잎 위치로 이어지는 끝단, 두께 2~3 ── */
   const twigs = `
-    <!-- 정상 잔가지 -->
-    <path d="M120,56 Q114,48 107,50"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M120,56 Q120,46 120,40"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <path d="M120,56 Q126,48 133,50"               stroke="${TW}" stroke-width="3" fill="none" stroke-linecap="round"/>
-    <!-- 중상 잔가지 -->
-    <path d="M90,78 Q90,70 90,62"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M150,78 Q150,70 150,62"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- 중 잔가지 -->
-    <path d="M78,92 Q76,82 75,72"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M162,92 Q164,82 165,72"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- 중하 잔가지 -->
-    <path d="M57,98 Q57,92 57,86"                  stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M183,98 Q183,92 183,86"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- 하 잔가지 -->
-    <path d="M38,110 Q38,104 38,98"                stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M202,110 Q202,104 202,98"             stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <!-- 최하 잔가지 -->
-    <path d="M26,114 Q24,113 22,112"               stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <path d="M214,114 Q216,113 218,112"            stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
-    <!-- 하 중좌우 잔가지 -->
-    <path d="M57,102 Q62,101 68,100"               stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-    <path d="M183,102 Q178,101 172,100"            stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 왕관 세 잔가지 (중앙 가지 끝에서 부채꼴) -->
+    <path d="M117,66 C113,62 108,59 104,57"
+          stroke="${S1}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M117,66 C117,59 116,53 116,48"
+          stroke="${S1}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <path d="M117,66 C121,61 125,57 130,54"
+          stroke="${S1}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    <!-- 상부 좌우 잔가지 -->
+    <path d="M93,77 C91,73 89,70 88,68"
+          stroke="${S1}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <path d="M149,79 C150,74 151,69 151,65"
+          stroke="${S1}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 중부 좌: 왼쪽 가지에서 위로 꺾임 -->
+    <path d="M61,96 C64,89 67,84 70,80"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 중부 우: 오른쪽 가지에서 살짝 위 -->
+    <path d="M184,103 C178,97 173,91 167,86"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 하중부 좌: 왼쪽 가지에서 더 바깥으로 -->
+    <path d="M36,96 C43,94 45,92 47,91"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 하중부 우 -->
+    <path d="M207,111 C199,106 193,101 187,97"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 하부 좌: 멀리 뻗는 잔가지 -->
+    <path d="M36,96 C32,97 28,98 25,99"
+          stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 하부 우 -->
+    <path d="M221,126 C218,120 215,114 211,110"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 최좌 (아래로 내려가는 가지 끝) -->
+    <path d="M15,95 C15,94 15,93 15,92"
+          stroke="${TW}" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <!-- 최우 -->
+    <path d="M221,126 C222,118 222,112 222,106"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 처진 가지 — 좌: 왼쪽 주가지에서 아래로 늘어짐 -->
+    <path d="M52,127 C50,117 47,113 44,110"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    <!-- 처진 가지 — 우: 오른쪽 주가지에서 아래로 -->
+    <path d="M207,111 C204,114 201,116 198,118"
+          stroke="${TW}" stroke-width="2.5" fill="none" stroke-linecap="round"/>
   `;
 
-  /* ── 잎 (자연스러운 SVG leaf path) ── */
-  const LP = 'M0,12 C10,5 11,-7 0,-14 C-11,-7 -10,5 0,12Z'; /* 잎 실루엣 */
-  const scales = [1.08,1.0,1.08, 1.05,1.05, 1.0,1.0, 1.05,1.05, 1.08,1.08, 1.0,1.0, 1.0,1.0];
+  /* ── 잎: 유기적 leaf path + 잎맥 ── */
+  const LP = 'M0,12 C10,5 11,-7 0,-14 C-11,-7 -10,5 0,12Z';
+  /* 잎마다 크기 미세 변화 — 더 자연스럽게 */
+  const SC = [1.10,1.02,1.06, 1.08,1.04, 1.01,1.03, 1.06,1.05, 1.08,1.02, 1.0,1.0, 1.04,1.03];
 
   const leafEls = leaves.map((leaf, i) => {
     const sp = LEAF_SPOTS[i];
     if (!sp) return '';
-    const sc = scales[i] || 1.0;
-    /* 어두운 잎맥선으로 자연감 추가 */
+    const sc = SC[i] || 1.0;
     return `<g transform="translate(${sp.x},${sp.y}) rotate(${sp.rot}) scale(${sc})">
       <path d="${LP}" fill="${leaf.color}" opacity=".92"/>
-      <line x1="0" y1="11" x2="0" y2="-13" stroke="rgba(0,0,0,.14)" stroke-width="0.9" stroke-linecap="round"/>
+      <line x1="0" y1="11" x2="0" y2="-13" stroke="rgba(0,0,0,.13)" stroke-width="0.85" stroke-linecap="round"/>
     </g>`;
   }).join('');
 
-  return `<svg viewBox="0 0 240 222" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
-    ${trunk}${mainBranches}${subBranches}${twigs}${leafEls}
+  return `<svg viewBox="0 0 248 222" width="${W}" height="${H}" xmlns="http://www.w3.org/2000/svg">
+    ${trunk}${main}${sub}${twigs}${leafEls}
   </svg>`;
 }
 
@@ -1798,15 +1838,32 @@ init();
 
     const email = id + '@nadareum.app';
 
-    const { data, error } = await sb.auth.signUp({ email, password: pw });
+    let data, error;
+    try {
+      ({ data, error } = await sb.auth.signUp({ email, password: pw }));
+    } catch (e) {
+      showAuthError('서버 연결에 실패했어요. 잠시 후 다시 시도해주세요');
+      return;
+    }
+
     if (error) {
       if (error.message.includes('already')) showAuthError('이미 사용 중인 아이디예요');
       else showAuthError('오류: ' + error.message);
       return;
     }
 
-    // profiles 테이블에 닉네임 저장
-    await sb.from('profiles').insert({ id: data.user.id, nickname: nick, xp: 0 });
+    /* data.user가 없으면 인증 실패로 간주 */
+    if (!data || !data.user) {
+      showAuthError('회원가입에 실패했어요. 잠시 후 다시 시도해주세요');
+      return;
+    }
+
+    try {
+      await sb.from('profiles').insert({ id: data.user.id, nickname: nick, xp: 0 });
+    } catch (e) {
+      showAuthError('프로필 저장에 실패했어요. 잠시 후 다시 시도해주세요');
+      return;
+    }
 
     G.name = nick;
     if (G.charColorIdx === null || G.charColorIdx === undefined) G.charColorIdx = Math.floor(Math.random() * 7);
@@ -1822,16 +1879,56 @@ init();
     if (!id || !pw) return showAuthError('아이디와 비밀번호를 입력해주세요');
 
     const email = id + '@nadareum.app';
-    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
-    if (error) { showAuthError('아이디 또는 비밀번호가 틀렸어요'); return; }
 
-    // profiles에서 닉네임·XP 불러오기
-    const { data: profile } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+    let data, error;
+    try {
+      ({ data, error } = await sb.auth.signInWithPassword({ email, password: pw }));
+    } catch (e) {
+      showAuthError('서버 연결에 실패했어요. 잠시 후 다시 시도해주세요');
+      return;
+    }
+
+    if (error) {
+      showAuthError('아이디 또는 비밀번호가 틀렸어요');
+      return;
+    }
+
+    /* data.user가 없으면 인증 실패로 간주 — enterAfterAuth 절대 호출 안 함 */
+    if (!data || !data.user) {
+      showAuthError('로그인에 실패했어요. 잠시 후 다시 시도해주세요');
+      return;
+    }
+
+    let profile = null;
+    try {
+      const { data: profileData } = await sb.from('profiles').select('*').eq('id', data.user.id).single();
+      profile = profileData;
+    } catch (e) {
+      /* 프로필 조회 실패 시 로그인은 허용하되 기본값 유지 */
+    }
+
     if (profile) {
       G.name = profile.nickname;
       G.xp   = profile.xp ?? G.xp;
       save();
     }
+
+    /* 프로필이 없거나 이름이 없으면 추가 차단 */
+    if (!G.name) {
+      showAuthError('사용자 정보를 불러오지 못했어요. 다시 시도해주세요');
+      return;
+    }
+
+    enterAfterAuth(G.name);
+  };
+
+  /* ── 게스트 시작 ── */
+  window.startGuest = () => {
+    const nick = prompt('게임에서 사용할 이름을 입력해주세요 (최대 8자)');
+    if (!nick || !nick.trim()) return;
+    G.name = nick.trim().slice(0, 8);
+    G.isGuest = true;
+    save();
     enterAfterAuth(G.name);
   };
 
@@ -1857,6 +1954,8 @@ init();
       save();
     }
     enterAfterAuth(G.name || '나다움');
+  } else if (G.isGuest && G.name) {
+    enterAfterAuth(G.name);
   }
 </script>
 </body>

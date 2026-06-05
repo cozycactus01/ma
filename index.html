@@ -1256,6 +1256,38 @@ function renderLight() {
       <span class="light-bar-val">${v}</span>
     </div>`).join('');
 
+  // ── 나의 감정 해석 ──
+  const p = G.profile;
+  const interpSentences = [
+    p.w > p.c ? '따뜻한 감정을 자주 느끼는 편이에요' : '차분하게 감정을 바라보는 편이에요',
+    p.d > p.s ? '변화 속에서 에너지를 얻어요'        : '고요함 속에서 자신을 찾아요',
+    p.i > p.g ? '감정이 강렬하게 느껴지는 편이에요'  : '감정을 부드럽게 받아들여요',
+    p.cl > p.df ? '감정을 선명하게 인식하는 편이에요' : '감정이 은은하게 스며드는 편이에요',
+  ];
+  const interpHtml = interpSentences.map(s =>
+    `<div style="font-size:13px;color:var(--brown);line-height:1.7;margin-bottom:5px;">• ${s}</div>`
+  ).join('');
+
+  const emoCounts = {};
+  G.emotions.forEach(e => { emoCounts[e.id] = (emoCounts[e.id] || 0) + 1; });
+  const top2 = Object.entries(emoCounts).sort((a,b) => b[1]-a[1]).slice(0,2)
+    .map(([id]) => { const em = EMOTIONS.find(x => x.id === id); return em ? `${em.ico} ${em.lbl}` : ''; })
+    .filter(Boolean);
+  const top2Html = top2.length
+    ? `<div style="font-size:13px;color:var(--brown-md);margin-top:10px;">자주 느낀 감정: <strong>${top2.join(', ')}</strong></div>`
+    : '';
+
+  // ── 나에게 보내는 한마디 ──
+  let msg;
+  if      (p.w >= p.c && p.cl >= p.df) msg = '밝고 선명하게 빛나는 당신, 그 온기가 주변을 따뜻하게 해요 🌟';
+  else if (p.w >= p.c && p.df > p.cl)  msg = '은은하게 스며드는 당신의 따뜻함이 세상을 부드럽게 만들어요 🌅';
+  else if (p.c > p.w  && p.cl >= p.df) msg = '고요하지만 선명한 당신, 깊은 곳에서 빛나는 사람이에요 🌙';
+  else if (p.c > p.w  && p.df > p.cl)  msg = '조용히 흐르는 당신의 빛이 가장 오래 남아요 🌫️';
+  else if (p.d > p.s)                   msg = '움직임 속에서 빛나는 당신, 그 에너지가 세상을 깨워요 ⚡';
+  else if (p.s >= p.d)                  msg = '고요함 속에서 단단해지는 당신, 그 깊이가 힘이에요 🌊';
+  else                                  msg = '지금까지 감정을 탐험해온 당신, 그 여정이 아름다워요 ✨';
+  const msgHtml = `<div style="background:var(--cream);border-radius:14px;padding:14px 16px;font-size:13px;color:var(--brown);line-height:1.7;font-style:italic;">${msg}</div>`;
+
   const eventDiary = G.diary.filter(e => e.type === 'event');
   let recordHtml = '';
   STAGES.filter(st => st.lv < 8).forEach((st, idx) => {
@@ -1288,6 +1320,10 @@ function renderLight() {
     <div class="light-type-desc">${t ? t.desc : '감정을 기록하며 빛 유형이 결정돼요.'}</div>
     <div class="light-section-title">감정 성향 프로파일</div>
     ${barsHtml}
+    <div class="light-section-title">나의 감정 해석</div>
+    ${interpHtml}${top2Html}
+    <div class="light-section-title">나에게 보내는 한마디</div>
+    ${msgHtml}
     <div class="light-section-title">나의 이야기 기록</div>
     ${recordHtml}
   `;

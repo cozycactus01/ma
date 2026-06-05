@@ -1241,7 +1241,7 @@ function enterRoom() {
   updateRoom();
   applyDecor();
   checkDust();
-  if (!G.onboarded) { setTimeout(startTutorial, 600); }
+  if (!G.onboarded && document.getElementById('modal-event').classList.contains('hidden')) { setTimeout(startTutorial, 600); }
 }
 
 /* ══════════════════════════════════
@@ -1664,6 +1664,7 @@ function goSignUp() {
 async function doLogout() {
   try { await sb.auth.signOut(); } catch(e) {}
   localStorage.removeItem('snj');
+  G = load();
   location.reload();
 }
 async function saveNick() {

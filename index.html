@@ -97,7 +97,8 @@
     #screen-room { min-height: 100vh; }
     .room-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: var(--ivory); }
     .room-logo { font-size: 20px; font-weight: 700; color: var(--accent); }
-    .lv-badge { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--brown); font-weight: 500; }
+    .lv-badge  { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 20px; padding: 5px 14px; font-size: 12px; color: var(--brown); font-weight: 500; }
+    .star-badge { background: var(--cream); border: 1.5px solid var(--beige); border-radius: 20px; padding: 5px 12px; font-size: 12px; color: var(--brown); font-weight: 600; }
     .xp-wrap { padding: 6px 20px 10px; background: var(--ivory); }
     .xp-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--brown-md); margin-bottom: 4px; }
     .xp-track { height: 6px; background: var(--cream); border-radius: 10px; overflow: hidden; }
@@ -412,6 +413,7 @@
     <div class="room-header">
       <div class="room-logo">신나는 자기이해</div>
       <div class="lv-badge" id="lv-badge">Lv.1 씨앗</div>
+      <div class="star-badge" id="star-badge">⭐ 0</div>
     </div>
     <div class="xp-wrap">
       <div class="xp-meta">
@@ -873,7 +875,7 @@ const DECORS = {
    STATE
 ══════════════════════════════════ */
 const DEF = {
-  lv:1, xp:0,
+  lv:1, xp:0, stars:0,
   name: null, charColorIdx: null, isGuest: false,
   lastPlayed:null, lastCheckin:null,
   lastEventDate:null, todayEventCount:0,
@@ -907,6 +909,7 @@ function load() {
         decor:   { ...DEF.decor,    ...(s.decor   || {}) },
         name:          s.name          || null,
         charColorIdx:  s.charColorIdx  ?? null,
+        stars:           s.stars           ?? 0,
         lastFeedDate:    s.lastFeedDate    || null,
         todayFeedCount:  s.todayFeedCount  ?? 0,
         lastBalloonTime: s.lastBalloonTime || null,
@@ -1064,6 +1067,7 @@ function updateRoom() {
   const pct = Math.min(100, ((G.xp - prv) / (st.need - prv)) * 100);
 
   document.getElementById('lv-badge').textContent   = `Lv.${G.lv} ${st.name}`;
+  document.getElementById('star-badge').textContent = `⭐ ${G.stars}`;
   document.getElementById('xp-stage').textContent   = `${G.lv}단계 · ${st.label}`;
   document.getElementById('xp-txt').textContent     = `${G.xp} / ${st.need} XP`;
   document.getElementById('xp-fill').style.width    = pct + '%';
@@ -1864,6 +1868,17 @@ function xpPop(txt) {
   const ref = document.getElementById('r-char');
   const el = document.createElement('div');
   el.className = 'xp-pop'; el.textContent = txt; el.style.bottom = '110%';
+  ref.style.position = 'absolute';
+  ref.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
+function addStars(n) {
+  G.stars += n;
+  save();
+  document.getElementById('star-badge').textContent = `⭐ ${G.stars}`;
+  const ref = document.getElementById('r-char');
+  const el = document.createElement('div');
+  el.className = 'xp-pop'; el.textContent = `+${n} ⭐`; el.style.bottom = '140%';
   ref.style.position = 'absolute';
   ref.appendChild(el);
   setTimeout(() => el.remove(), 1500);

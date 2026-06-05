@@ -199,6 +199,13 @@
     .prop-mug     { bottom: 70px; left: 22px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
     .prop-lamp    { bottom: 68px; right: 20px; font-size: 26px; animation: lampGlow 2.5s ease-in-out infinite alternate; }
     @keyframes lampGlow { from { filter: drop-shadow(0 0 4px rgba(255,180,60,.5)); } to { filter: drop-shadow(0 0 10px rgba(255,160,40,.85)); } }
+    @keyframes luFloat { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-18px)} }
+    #lu-icon { animation: luFloat 2.2s ease-in-out infinite; }
+    @keyframes luParticle {
+      0%   { transform: translate(0,0) scale(1); opacity:1; }
+      100% { transform: translate(var(--px), var(--py)) scale(0); opacity:0; }
+    }
+    .lu-p { position:fixed; border-radius:50%; pointer-events:none; animation: luParticle 1.6s ease-out forwards; }
     .prop-mobile { top: 0px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
     .mobile-bar { width: 100px; height: 4px; background: var(--beige-dk); border-radius: 2px; }
     .mobile-stars { display: flex; gap: 18px; padding-top: 8px; }
@@ -646,6 +653,16 @@
   </div>
 </div>
 
+<div id="modal-levelup" class="hidden" style="position:fixed;inset:0;z-index:900;background:rgba(40,28,18,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
+  <div id="lu-particles"></div>
+  <div id="lu-icon" style="font-size:72px;margin-bottom:16px;"></div>
+  <div id="lu-title" style="font-size:22px;font-weight:800;color:#FFF8F0;margin-bottom:6px;text-align:center;"></div>
+  <div id="lu-label" style="font-size:15px;font-weight:600;color:#F0D8B8;margin-bottom:10px;text-align:center;"></div>
+  <div id="lu-desc"  style="font-size:13px;color:#D8C4A8;line-height:1.7;text-align:center;max-width:260px;margin-bottom:16px;"></div>
+  <div id="lu-bonus" style="font-size:14px;font-weight:700;color:#FFD060;margin-bottom:22px;">+3⭐ 레벨업 보너스!</div>
+  <button onclick="closeLevelUp()" style="background:#C4865A;border:none;border-radius:14px;padding:13px 36px;font-size:15px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;">계속하기</button>
+</div>
+
 <div class="overlay hidden" id="modal-light" onclick="bgClose(event,'modal-light')">
   <div class="sheet" style="max-height:88vh;overflow-y:auto;">
     <div class="handle"></div>
@@ -1024,6 +1041,48 @@ document.getElementById('enter-btn').addEventListener('click', () => {
   enterRoom();
 });
 
+const LU_COLORS = [
+  ['#A8E090','#F0E860'],  // lv1 초록/노랑
+  ['#90D890','#C8F070'],  // lv2
+  ['#F0A8C8','#F8E080'],  // lv3 핑크/노랑
+  ['#F09870','#F8D060'],  // lv4 오렌지/금
+  ['#F0C840','#E8A030'],  // lv5 금색
+  ['#D890F0','#F0C050'],  // lv6 보라/금
+  ['#C070E0','#A858D0'],  // lv7 보라
+  ['#FFD060','#FFA030'],  // lv8 황금
+];
+function showLevelUp(lv) {
+  const st = STAGES[lv - 1];
+  document.getElementById('lu-icon').textContent  = st.icon;
+  document.getElementById('lu-title').textContent = `${lv}단계로 성장했어요!`;
+  document.getElementById('lu-label').textContent = st.label;
+  document.getElementById('lu-desc').textContent  = st.desc;
+  document.getElementById('modal-levelup').classList.remove('hidden');
+  addStars(3); updateRoom();
+  spawnLuParticles(lv);
+}
+function spawnLuParticles(lv) {
+  const container = document.getElementById('lu-particles');
+  container.innerHTML = '';
+  const colors = LU_COLORS[Math.min(lv - 1, LU_COLORS.length - 1)];
+  const shapes = ['⭐','✨','🌟','❋','·'];
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'lu-p';
+    const sz  = Math.random() * 10 + 6;
+    const col = colors[Math.floor(Math.random() * colors.length)];
+    const sx  = Math.random() * window.innerWidth;
+    const sy  = Math.random() * window.innerHeight;
+    const px  = (Math.random() - 0.5) * 260 + 'px';
+    const py  = (Math.random() - 0.5) * 340 + 'px';
+    el.style.cssText = `width:${sz}px;height:${sz}px;background:${col};left:${sx}px;top:${sy}px;--px:${px};--py:${py};animation-delay:${Math.random()*0.6}s;animation-duration:${1.4+Math.random()*0.8}s;`;
+    container.appendChild(el);
+  }
+  setTimeout(() => { container.innerHTML = ''; }, 2800);
+}
+function closeLevelUp() {
+  document.getElementById('modal-levelup').classList.add('hidden');
+}
 function checkStreak() {
   const t = today();
   if (G.lastStreakDate === t) return;
@@ -1083,9 +1142,9 @@ function addXP(n) {
       G.lv++;
       const reachedLv = G.lv;
       setTimeout(() => {
-        toast(`✨ ${STAGES[reachedLv-1].name}(으)로 성장했어요!`);
-        if (reachedLv === 8) setTimeout(openLight, 1200);
-      }, 400);
+        showLevelUp(reachedLv);
+        if (reachedLv === 8) setTimeout(openLight, 3200);
+      }, 600);
     } else break;
   }
 }

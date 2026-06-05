@@ -112,13 +112,22 @@
     .wall-0 { background: linear-gradient(175deg, #EDE7DC 0%, #E2DAD0 100%); }
     .wall-1 { background: linear-gradient(175deg, #D5E8D0 0%, #C8DFBE 100%); }
     .wall-2 { background: linear-gradient(175deg, #E4D8F5 0%, #D8CCF0 100%); }
+    .wall-3 { background: linear-gradient(175deg, #E8DDD0 0%, #D9C9B5 100%); }
+    .wall-4 { background: linear-gradient(175deg, #F5DDD8 0%, #EDCBC2 100%); }
+    .wall-5 { background: linear-gradient(175deg, #F0E0A0 0%, #E2CC78 100%); }
 
     /* Light variants — tint overlay on room-scene */
     #room-scene.light-1::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(255,170,50,.07); }
     #room-scene.light-2::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(100,130,220,.09); }
+    #room-scene.light-3::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(255,140,40,.10); }
+    #room-scene.light-4::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(255,90,20,.08); }
+    #room-scene.light-5::before { content: ''; position: absolute; inset: 0; z-index: 7; pointer-events: none; background: rgba(30,20,80,.12); }
     .light-0 .win-light { background: radial-gradient(ellipse at top left, rgba(255,240,200,.35) 0%, transparent 65%); }
     .light-1 .win-light { background: radial-gradient(ellipse at top left, rgba(255,180,60,.52) 0%, transparent 65%); }
     .light-2 .win-light { background: radial-gradient(ellipse at top left, rgba(140,175,255,.42) 0%, transparent 60%); }
+    .light-3 .win-light { background: radial-gradient(ellipse at top left, rgba(255,160,60,.60) 0%, transparent 60%); }
+    .light-4 .win-light { background: radial-gradient(ellipse at top left, rgba(255,110,30,.65) 0%, transparent 55%); }
+    .light-5 .win-light { background: radial-gradient(ellipse at top left, rgba(80,60,180,.30) 0%, transparent 60%); }
 
     /* Floor */
     .r-floor { position: absolute; bottom: 0; left: 0; right: 0; height: 40%; background: repeating-linear-gradient(90deg, var(--floor1) 0px, var(--floor1) 59px, var(--floor2) 59px, var(--floor2) 60px); }
@@ -184,7 +193,11 @@
 
     /* Props */
     .r-prop { position: absolute; z-index: 5; }
-    .prop-wreath { top: 118px; left: 50%; transform: translateX(-50%); font-size: 17px; letter-spacing: 3px; background: rgba(255,248,240,.75); border: 1.5px solid rgba(200,170,140,.45); border-radius: 30px; padding: 5px 14px; }
+    .prop-wreath  { top: 118px; left: 50%; transform: translateX(-50%); font-size: 17px; letter-spacing: 3px; background: rgba(255,248,240,.75); border: 1.5px solid rgba(200,170,140,.45); border-radius: 30px; padding: 5px 14px; }
+    .prop-blanket { bottom: 72px; right: 18px; font-size: 28px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
+    .prop-mug     { bottom: 70px; left: 22px; font-size: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.1)); }
+    .prop-lamp    { bottom: 68px; right: 20px; font-size: 26px; animation: lampGlow 2.5s ease-in-out infinite alternate; }
+    @keyframes lampGlow { from { filter: drop-shadow(0 0 4px rgba(255,180,60,.5)); } to { filter: drop-shadow(0 0 10px rgba(255,160,40,.85)); } }
     .prop-mobile { top: 0px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; }
     .mobile-bar { width: 100px; height: 4px; background: var(--beige-dk); border-radius: 2px; }
     .mobile-stars { display: flex; gap: 18px; padding-top: 8px; }
@@ -834,16 +847,25 @@ const DECORS = {
     { id:0, name:'따뜻한 아이보리', ico:'🤍', unlock:0   },
     { id:1, name:'봄빛 초록',       ico:'💚', unlock:30  },
     { id:2, name:'달밤 라벤더',     ico:'💜', unlock:80  },
+    { id:3, name:'따뜻한 모래빛',   ico:'🤎', unlock:120 },
+    { id:4, name:'저녁노을 핑크',   ico:'🩷', unlock:180 },
+    { id:5, name:'포근한 머스타드', ico:'🧡', unlock:250 },
   ],
   light: [
-    { id:0, name:'맑은 햇살',   ico:'☀️', unlock:0   },
-    { id:1, name:'황금빛 저녁', ico:'🌅', unlock:50  },
-    { id:2, name:'고요한 달빛', ico:'🌙', unlock:150 },
+    { id:0, name:'맑은 햇살',     ico:'☀️', unlock:0   },
+    { id:1, name:'황금빛 저녁',   ico:'🌅', unlock:50  },
+    { id:2, name:'고요한 달빛',   ico:'🌙', unlock:150 },
+    { id:3, name:'따뜻한 캔들빛', ico:'🕯️', unlock:200 },
+    { id:4, name:'벽난로 불빛',   ico:'🔥', unlock:280 },
+    { id:5, name:'별이 빛나는 밤',ico:'⭐', unlock:350 },
   ],
   prop: [
-    { id:0, name:'없음',      ico:'◻️', unlock:0   },
-    { id:1, name:'봄꽃 화환', ico:'🌸', unlock:40  },
-    { id:2, name:'별빛 모빌', ico:'⭐', unlock:100 },
+    { id:0, name:'없음',        ico:'◻️', unlock:0   },
+    { id:1, name:'봄꽃 화환',   ico:'🌸', unlock:40  },
+    { id:2, name:'별빛 모빌',   ico:'⭐', unlock:100 },
+    { id:3, name:'포근한 담요', ico:'🧸', unlock:150 },
+    { id:4, name:'따뜻한 머그컵',ico:'☕', unlock:220 },
+    { id:5, name:'작은 무드등', ico:'🪔', unlock:300 },
   ],
 };
 
@@ -1071,7 +1093,7 @@ function applyDecor() {
 
   // Light
   const scene = document.getElementById('room-scene');
-  scene.classList.remove('light-0','light-1','light-2');
+  scene.classList.remove('light-0','light-1','light-2','light-3','light-4','light-5');
   scene.classList.add(`light-${light}`);
 
   // Prop
@@ -1088,6 +1110,18 @@ function applyDecor() {
     propEl.classList.remove('hidden');
     propEl.classList.add('prop-mobile');
     propEl.innerHTML = `<div class="mobile-bar"></div><div class="mobile-stars"><span style="animation-delay:0s">⭐</span><span style="animation-delay:.35s">🌟</span><span style="animation-delay:.7s">⭐</span></div>`;
+  } else if (prop === 3) {
+    propEl.classList.remove('hidden');
+    propEl.classList.add('prop-blanket');
+    propEl.textContent = '🧸';
+  } else if (prop === 4) {
+    propEl.classList.remove('hidden');
+    propEl.classList.add('prop-mug');
+    propEl.textContent = '☕';
+  } else if (prop === 5) {
+    propEl.classList.remove('hidden');
+    propEl.classList.add('prop-lamp');
+    propEl.textContent = '🪔';
   }
 }
 

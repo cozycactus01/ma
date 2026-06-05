@@ -653,6 +653,18 @@
   </div>
 </div>
 
+<div id="tutorial-overlay" class="hidden" style="position:fixed;inset:0;z-index:800;pointer-events:none;">
+  <div id="tutorial-dim" style="position:absolute;inset:0;background:rgba(30,20,12,.68);transition:opacity .3s;"></div>
+  <div id="tutorial-highlight" style="position:absolute;border-radius:18px;box-shadow:0 0 0 9999px rgba(30,20,12,.68);transition:all .35s;pointer-events:none;"></div>
+  <div id="tutorial-bubble" style="position:absolute;background:#FFF8F0;border-radius:18px;padding:18px 20px;max-width:260px;box-shadow:0 8px 32px rgba(0,0,0,.22);transition:all .35s;pointer-events:all;">
+    <div id="tutorial-text" style="font-size:14px;color:#5A3E28;line-height:1.7;margin-bottom:14px;"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <span id="tutorial-step-txt" style="font-size:12px;color:#B09070;"></span>
+      <button id="tutorial-next-btn" style="background:#C4865A;border:none;border-radius:10px;padding:8px 20px;font-size:13px;font-weight:700;color:#fff;cursor:pointer;font-family:inherit;"></button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-levelup" class="hidden" style="position:fixed;inset:0;z-index:900;background:rgba(40,28,18,.72);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px;">
   <div id="lu-particles"></div>
   <div id="lu-icon" style="font-size:72px;margin-bottom:16px;"></div>
@@ -893,7 +905,7 @@ const DECORS = {
    STATE
 ══════════════════════════════════ */
 const DEF = {
-  lv:1, xp:0, stars:0, streak:0, lastStreakDate:null,
+  lv:1, xp:0, stars:0, streak:0, lastStreakDate:null, onboarded:false,
   name: null, charColorIdx: null, isGuest: false,
   lastPlayed:null, lastCheckin:null,
   lastEventDate:null, todayEventCount:0,
@@ -936,6 +948,7 @@ function load() {
         stars:           s.stars           ?? 0,
         streak:          s.streak          ?? 0,
         lastStreakDate:  s.lastStreakDate   || null,
+        onboarded:       s.onboarded       ?? false,
         lastFeedDate:    s.lastFeedDate    || null,
         todayFeedCount:  s.todayFeedCount  ?? 0,
         lastBalloonTime: s.lastBalloonTime || null,
@@ -1041,6 +1054,78 @@ document.getElementById('enter-btn').addEventListener('click', () => {
   enterRoom();
 });
 
+/* ══════════════════════════════════
+   TUTORIAL
+══════════════════════════════════ */
+let tutStep = 0;
+const TUTORIAL_STEPS = [
+  {
+    getEl: () => document.getElementById('r-char'),
+    text: '안녕하세요! 이게 바로 나다움이에요 🌱\n감정을 탐험할수록 점점 밝게 빛나요',
+  },
+  {
+    getEl: () => document.querySelector('.btn-feed'),
+    text: '매일 지금 기분을 체크인해요 😊\n하루 한 번, 감정을 살펴보는 시간이에요',
+  },
+  {
+    getEl: () => document.querySelector('.btn-mini'),
+    text: '미니게임으로 마음을 돌봐요 🎮\n풍선 불기, 분리수거 등 다양한 활동이 있어요',
+  },
+  {
+    getEl: () => document.querySelectorAll('.btn-diary')[1],
+    text: '발달과제를 완료하면 여기에 기록돼요 📝\n나만의 성장 이야기가 쌓여가요',
+  },
+];
+function startTutorial() {
+  tutStep = 0;
+  document.getElementById('tutorial-overlay').classList.remove('hidden');
+  showTutStep();
+}
+function showTutStep() {
+  const ov   = document.getElementById('tutorial-overlay');
+  const hl   = document.getElementById('tutorial-highlight');
+  const bub  = document.getElementById('tutorial-bubble');
+  const txt  = document.getElementById('tutorial-text');
+  const stxt = document.getElementById('tutorial-step-txt');
+  const btn  = document.getElementById('tutorial-next-btn');
+
+  const isLast = tutStep >= TUTORIAL_STEPS.length;
+  if (isLast) {
+    txt.textContent  = '이제 시작해볼까요? ✨';
+    stxt.textContent = '';
+    btn.textContent  = '시작하기';
+    hl.style.cssText = 'position:absolute;border-radius:18px;box-shadow:0 0 0 9999px rgba(30,20,12,.68);width:0;height:0;top:50%;left:50%;';
+    const bw = 260, bh = 120;
+    bub.style.left = Math.round((window.innerWidth - bw) / 2) + 'px';
+    bub.style.top  = Math.round((window.innerHeight - bh) / 2) + 'px';
+    btn.onclick = endTutorial;
+    return;
+  }
+
+  const step  = TUTORIAL_STEPS[tutStep];
+  const el    = step.getEl();
+  const pad   = 12;
+  if (el) {
+    const r = el.getBoundingClientRect();
+    hl.style.cssText = `position:absolute;border-radius:18px;transition:all .35s;pointer-events:none;box-shadow:0 0 0 9999px rgba(30,20,12,.68);left:${r.left-pad}px;top:${r.top-pad}px;width:${r.width+pad*2}px;height:${r.height+pad*2}px;`;
+    const bw = 260;
+    let bx = r.left + r.width/2 - bw/2;
+    bx = Math.max(12, Math.min(bx, window.innerWidth - bw - 12));
+    let by = r.bottom + 18;
+    if (by + 130 > window.innerHeight) by = r.top - 148;
+    bub.style.left = bx + 'px';
+    bub.style.top  = by + 'px';
+  }
+  txt.textContent  = step.text;
+  stxt.textContent = `${tutStep + 1} / ${TUTORIAL_STEPS.length}`;
+  btn.textContent  = '다음';
+  btn.onclick = () => { tutStep++; showTutStep(); };
+}
+function endTutorial() {
+  document.getElementById('tutorial-overlay').classList.add('hidden');
+  G.onboarded = true; save();
+  setTimeout(maybeEvent, 800);
+}
 const LU_COLORS = [
   ['#A8E090','#F0E860'],  // lv1 초록/노랑
   ['#90D890','#C8F070'],  // lv2
@@ -1112,7 +1197,8 @@ function enterRoom() {
   updateRoom();
   applyDecor();
   checkDust();
-  setTimeout(maybeEvent, 1400);
+  if (!G.onboarded) { setTimeout(startTutorial, 600); }
+  else { setTimeout(maybeEvent, 1400); }
 }
 
 /* ══════════════════════════════════

@@ -415,6 +415,20 @@
     <button class="enter-btn" id="enter-btn" disabled>방으로 들어가기 →</button>
   </div>
 
+  <!-- MEMO SCREEN -->
+  <div id="screen-memo" class="screen hidden" style="justify-content:center;align-items:center;padding:32px 28px;gap:20px;">
+    <div class="emo-header" style="position:absolute;top:0;left:0;right:0;">
+      <div class="emo-title">신나는 자기이해</div>
+    </div>
+    <div class="name-card" style="width:100%;max-width:360px;display:flex;flex-direction:column;gap:14px;margin-top:48px;">
+      <div id="memo-emo-display" style="text-align:center;font-size:28px;margin-bottom:4px;"></div>
+      <p style="text-align:center;font-size:14px;color:var(--brown-md);margin:0;">오늘 이 감정이 든 이유를 적어볼까요?</p>
+      <input id="memo-input" class="name-input" type="text" maxlength="50" placeholder="오늘 있었던 일을 한 줄로 (선택)" />
+      <button class="enter-btn" onclick="submitMemo()">기록하기</button>
+      <button onclick="submitMemo(true)" style="background:none;border:none;color:var(--brown-md);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:-6px;">건너뛰기</button>
+    </div>
+  </div>
+
   <!-- MAIN ROOM -->
   <div id="screen-room" class="screen hidden">
     <div class="room-header">
@@ -1044,15 +1058,24 @@ function buildEmoGrid(id, mode) {
 
 document.getElementById('enter-btn').addEventListener('click', () => {
   if (!pickEmo) return;
+  const em = EMOTIONS.find(e => e.id === pickEmo);
+  document.getElementById('memo-emo-display').textContent = em ? `${em.ico} ${em.lbl}` : '';
+  document.getElementById('memo-input').value = '';
+  document.getElementById('screen-emotion').classList.add('hidden');
+  document.getElementById('screen-memo').classList.remove('hidden');
+});
+function submitMemo(skip = false) {
+  const memo = skip ? '' : (document.getElementById('memo-input').value.trim());
+  document.getElementById('screen-memo').classList.add('hidden');
   G.lastCheckin = today();
   G.lastPlayed  = Date.now();
   applyEmo(pickEmo, 2);
   addXP(5);
-  logDiary({ type:'checkin', emo:pickEmo });
+  logDiary({ type:'checkin', emo:pickEmo, ...(memo ? { memo } : {}) });
   checkStreak();
   save();
   enterRoom();
-});
+}
 
 /* ══════════════════════════════════
    TUTORIAL
@@ -1614,7 +1637,9 @@ function renderDiary() {
 
     const checkinHtml = checkin ? (() => {
       const em = EMOTIONS.find(x => x.id === checkin.emo);
-      return em ? `<div class="diary-item">🌅 아침 감정 · <strong>${em.ico} ${em.lbl}</strong></div>` : '';
+      if (!em) return '';
+      const memoHtml = checkin.memo ? `<div style="font-size:12px;color:var(--brown-md);font-style:italic;margin-top:3px;">"${checkin.memo}"</div>` : '';
+      return `<div class="diary-item">🌅 아침 감정 · <strong>${em.ico} ${em.lbl}</strong>${memoHtml}</div>`;
     })() : '';
 
     const feedsHtml = feeds.length > 0 ? `<div class="diary-item">🫧 먹인 감정 · ${feeds.map(f => {

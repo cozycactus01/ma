@@ -269,6 +269,12 @@
     .diary-event { background: var(--white); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
     .diary-event-title  { font-size: 12px; font-weight: 600; color: var(--brown); }
     .diary-event-choice { font-size: 12px; color: var(--brown-md); margin-top: 3px; font-style: italic; }
+    .record-stage { margin-bottom: 18px; }
+    .record-stage-title { font-size: 14px; font-weight: 700; color: var(--brown); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--beige); }
+    .record-event { background: var(--cream); border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
+    .record-event-title { font-size: 13px; font-weight: 600; color: var(--brown); }
+    .record-event-choice { font-size: 12px; color: var(--brown-md); margin-top: 4px; font-style: italic; }
+    .record-empty { font-size: 12px; color: var(--brown-md); padding: 8px 2px; }
 
     /* Toast & XP pop */
     .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(70,54,40,.9); color: #fff; padding: 11px 22px; border-radius: 20px; font-size: 13px; opacity: 0; transition: all .3s; z-index: 200; white-space: nowrap; pointer-events: none; }
@@ -453,6 +459,7 @@
       <button class="act-btn btn-diary" onclick="openDiary()"><span class="ico">📖</span>감정 일기</button>
       <button class="act-btn btn-mini"  onclick="openMini()"><span class="ico">🎮</span>미니게임</button>
       <button class="act-btn btn-leaf"  onclick="openTree()"><span class="ico">🌿</span>나뭇잎 달기</button>
+      <button class="act-btn btn-diary" onclick="openRecord()"><span class="ico">📝</span>나의 기록</button>
     </div>
     <div class="feed-hist">
       <h3>최근에 먹인 감정들</h3>
@@ -610,6 +617,15 @@
     <div id="tree-panel-gal" class="hidden">
       <div id="tree-gallery"></div>
     </div>
+  </div>
+</div>
+
+<div class="overlay hidden" id="modal-record" onclick="bgClose(event,'modal-record')">
+  <div class="sheet">
+    <div class="handle"></div>
+    <div class="modal-title">나의 기록 📝</div>
+    <div class="modal-sub">내가 탐험한 이야기들이에요</div>
+    <div id="record-list"></div>
   </div>
 </div>
 
@@ -1147,7 +1163,7 @@ function confirmEvent() {
   const custom = document.getElementById('custom-ta').value.trim();
   if (!selChoice && !custom) { toast('선택지를 고르거나 직접 적어주세요 💭'); return; }
   const choice = custom || selChoice;
-  logDiary({ type:'event', title:curEvent.title, choice });
+  logDiary({ type:'event', title:curEvent.title, choice, stage:curEvent.stage });
   if (!G.seenEvents.includes(curEvent.title)) G.seenEvents.push(curEvent.title);
   addXP(curEvent.xp);
   save();
@@ -1199,6 +1215,38 @@ function confirmDecor() {
 function openDiary() {
   renderDiary();
   document.getElementById('modal-diary').classList.remove('hidden');
+}
+function openRecord() {
+  renderRecord();
+  document.getElementById('modal-record').classList.remove('hidden');
+}
+function renderRecord() {
+  const el = document.getElementById('record-list');
+  const eventDiary = G.diary.filter(e => e.type === 'event');
+  let html = '';
+  STAGES.forEach((st, idx) => {
+    const stageNum = idx + 1;
+    if (st.lv === 8) return; // 빛 단계는 이벤트 없음
+    const entries = eventDiary.filter(e => {
+      if (e.stage != null) return e.stage === stageNum;
+      const ev = EVENTS.find(ev => ev.title === e.title);
+      return ev && ev.stage === stageNum;
+    });
+    html += `<div class="record-stage">`;
+    html += `<div class="record-stage-title">${st.icon} ${st.label}</div>`;
+    if (!entries.length) {
+      html += `<div class="record-empty">아직 탐험 전이에요 🌿</div>`;
+    } else {
+      entries.forEach(e => {
+        html += `<div class="record-event">
+          <div class="record-event-title">${e.title}</div>
+          <div class="record-event-choice">→ "${e.choice}"</div>
+        </div>`;
+      });
+    }
+    html += `</div>`;
+  });
+  el.innerHTML = html;
 }
 function renderDiary() {
   const el = document.getElementById('diary-list');

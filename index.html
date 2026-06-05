@@ -2404,13 +2404,14 @@ init();
     }
 
     try {
-      await sb.from('profiles').insert({ id: data.user.id, nickname: nick, xp: 0 });
+      await sb.from('profiles').insert({ id: data.user.id, nickname: nick, xp: G.xp });
     } catch (e) {
       showAuthError('프로필 저장에 실패했어요. 잠시 후 다시 시도해주세요');
       return;
     }
 
     G.name = nick;
+    G.isGuest = false;
     if (G.charColorIdx === null || G.charColorIdx === undefined) G.charColorIdx = Math.floor(Math.random() * 7);
     save();
     enterAfterAuth(nick);

@@ -856,6 +856,7 @@ const DEF = {
   lastPlayed:null, lastCheckin:null,
   lastEventDate:null, todayEventCount:0,
   lastFeedDate:null,  todayFeedCount:0,
+  lastBalloonTime:null, lastSortTime:null,
   emotions:[],
   profile:{ w:0,c:0,i:0,g:0,d:0,s:0,cl:0,df:0 },
   type:null,
@@ -884,8 +885,10 @@ function load() {
         decor:   { ...DEF.decor,    ...(s.decor   || {}) },
         name:          s.name          || null,
         charColorIdx:  s.charColorIdx  ?? null,
-        lastFeedDate:  s.lastFeedDate  || null,
-        todayFeedCount:s.todayFeedCount ?? 0,
+        lastFeedDate:    s.lastFeedDate    || null,
+        todayFeedCount:  s.todayFeedCount  ?? 0,
+        lastBalloonTime: s.lastBalloonTime || null,
+        lastSortTime:    s.lastSortTime    || null,
         emotions:   s.emotions   || [],
         diary:      s.diary      || [],
         seenEvents:  s.seenEvents  || [],
@@ -1843,6 +1846,11 @@ function openMini() {
 let bTimer = null, bScale = 1, bRounds = 0;
 
 function openBalloon() {
+  const COOLDOWN = 10 * 60 * 1000;
+  if (G.lastBalloonTime && Date.now() - G.lastBalloonTime < COOLDOWN) {
+    const mins = Math.round((COOLDOWN - (Date.now() - G.lastBalloonTime)) / 60000);
+    toast(`🎈 잠시 후에 다시 할 수 있어요! (${mins}분 후)`); return;
+  }
   bRounds = 0; bScale = 1;
   if (bTimer) { clearInterval(bTimer); bTimer = null; }
   document.getElementById('balloon-body').style.transform = 'scale(1)';
@@ -1882,6 +1890,7 @@ function balloonRelease(e) {
           setTimeout(() => {
             document.getElementById('modal-balloon').classList.add('hidden');
             document.getElementById('balloon-btn').disabled = false;
+            G.lastBalloonTime = Date.now();
             addXP(15); save(); updateRoom();
             xpPop('+15 XP');
             toast('마음 풍선 불기 완료! +15 XP 🎈');
@@ -1906,6 +1915,11 @@ const SORT_WORDS = ['걱정','기대','후회','설렘','피로','분노','감�
 let sortIdx = 0, sortLeft = [], sortRight = [], sortStartX = 0, sortDragging = false;
 
 function openSort() {
+  const COOLDOWN = 10 * 60 * 1000;
+  if (G.lastSortTime && Date.now() - G.lastSortTime < COOLDOWN) {
+    const mins = Math.round((COOLDOWN - (Date.now() - G.lastSortTime)) / 60000);
+    toast(`♻️ 잠시 후에 다시 할 수 있어요! (${mins}분 후)`); return;
+  }
   sortIdx = 0; sortLeft = []; sortRight = []; sortDragging = false;
   document.getElementById('sort-result').classList.add('hidden');
   document.getElementById('sort-area').style.display = 'flex';
@@ -1966,6 +1980,7 @@ function finishSort() {
 
 function closeSortDone() {
   document.getElementById('modal-sort').classList.add('hidden');
+  G.lastSortTime = Date.now();
   addXP(18); save(); updateRoom();
   xpPop('+18 XP');
   toast('생각 분리수거 완료! +18 XP ♻️');

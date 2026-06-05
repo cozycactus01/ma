@@ -1000,6 +1000,7 @@ function load() {
   return { ...DEF, profile:{...DEF.profile}, decor:{...DEF.decor}, emotions:[], diary:[], seenEvents:[], trees:[], currentTree:null, name:null };
 }
 function save() { localStorage.setItem('snj', JSON.stringify(G)); }
+function reset() { return { ...DEF, profile:{...DEF.profile}, decor:{...DEF.decor}, ownedDecor:{wall:[0],light:[0],prop:[0]}, emotions:[], diary:[], seenEvents:[], trees:[], currentTree:null, name:null }; }
 function today() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
@@ -1241,7 +1242,7 @@ function enterRoom() {
   updateRoom();
   applyDecor();
   checkDust();
-  if (!G.onboarded && document.getElementById('modal-event').classList.contains('hidden')) { setTimeout(startTutorial, 600); }
+  if (G.onboarded !== true && G.diary.length === 0 && document.getElementById('modal-event').classList.contains('hidden')) { setTimeout(startTutorial, 600); }
 }
 
 /* ══════════════════════════════════
@@ -1664,7 +1665,9 @@ function goSignUp() {
 async function doLogout() {
   try { await sb.auth.signOut(); } catch(e) {}
   localStorage.removeItem('snj');
-  G = load();
+  G = reset();
+  G.onboarded = false;
+  save();
   location.reload();
 }
 async function saveNick() {

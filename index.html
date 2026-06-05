@@ -269,6 +269,15 @@
     .diary-event { background: var(--white); border-radius: 10px; padding: 10px 12px; margin-top: 8px; }
     .diary-event-title  { font-size: 12px; font-weight: 600; color: var(--brown); }
     .diary-event-choice { font-size: 12px; color: var(--brown-md); margin-top: 3px; font-style: italic; }
+    .light-type-name { font-size: 22px; font-weight: 800; text-align: center; margin-bottom: 6px; }
+    .light-type-desc { font-size: 13px; color: var(--brown-md); text-align: center; line-height: 1.7; margin-bottom: 22px; }
+    .light-orb { width: 80px; height: 80px; border-radius: 50%; margin: 0 auto 18px; }
+    .light-section-title { font-size: 13px; font-weight: 700; color: var(--brown); margin: 18px 0 10px; }
+    .light-bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+    .light-bar-label { font-size: 12px; color: var(--brown-md); width: 56px; flex-shrink: 0; }
+    .light-bar-track { flex: 1; height: 8px; background: var(--beige); border-radius: 99px; overflow: hidden; }
+    .light-bar-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width .4s; }
+    .light-bar-val { font-size: 11px; color: var(--brown-md); width: 22px; text-align: right; flex-shrink: 0; }
     .record-stage { margin-bottom: 18px; }
     .record-stage-title { font-size: 14px; font-weight: 700; color: var(--brown); margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--beige); }
     .record-event { background: var(--cream); border-radius: 12px; padding: 11px 13px; margin-bottom: 8px; }
@@ -460,6 +469,7 @@
       <button class="act-btn btn-mini"  onclick="openMini()"><span class="ico">🎮</span>미니게임</button>
       <button class="act-btn btn-leaf"  onclick="openTree()"><span class="ico">🌿</span>나뭇잎 달기</button>
       <button class="act-btn btn-diary" onclick="openRecord()"><span class="ico">📝</span>나의 기록</button>
+      <button class="act-btn btn-diary" id="btn-light" onclick="openLight()" style="display:none;"><span class="ico">✨</span>나의 빛</button>
     </div>
     <div class="feed-hist">
       <h3>최근에 먹인 감정들</h3>
@@ -620,6 +630,13 @@
   </div>
 </div>
 
+<div class="overlay hidden" id="modal-light" onclick="bgClose(event,'modal-light')">
+  <div class="sheet" style="max-height:88vh;overflow-y:auto;">
+    <div class="handle"></div>
+    <div id="light-content"></div>
+  </div>
+</div>
+
 <div class="overlay hidden" id="modal-record" onclick="bgClose(event,'modal-record')">
   <div class="sheet">
     <div class="handle"></div>
@@ -662,22 +679,22 @@ const STAGES = [
 ];
 
 const TYPES = {
-  warm_intense_dynamic_clear:   { name:'따스한 새벽빛', c1:'#FFB830', c2:'#FF6A48', glow:'rgba(255,150,60,.45)' },
-  warm_intense_dynamic_diffuse: { name:'노을빛 안개',   c1:'#FFA040', c2:'#E04878', glow:'rgba(255,110,80,.4)' },
-  warm_intense_still_clear:     { name:'황금빛 고요',   c1:'#FFD040', c2:'#C85C3A', glow:'rgba(255,195,55,.4)' },
-  warm_intense_still_diffuse:   { name:'불꽃 잔향',     c1:'#FFC060', c2:'#D06858', glow:'rgba(255,170,75,.35)' },
-  warm_gentle_dynamic_clear:    { name:'봄볕 속 춤',    c1:'#FFE080', c2:'#F08850', glow:'rgba(255,215,95,.4)' },
-  warm_gentle_dynamic_diffuse:  { name:'꿀빛 저녁',     c1:'#FFD090', c2:'#E09860', glow:'rgba(255,192,110,.35)' },
-  warm_gentle_still_clear:      { name:'온화한 햇살',   c1:'#FFE8A0', c2:'#D4A060', glow:'rgba(255,218,130,.4)' },
-  warm_gentle_still_diffuse:    { name:'따뜻한 이슬',   c1:'#FFE8B8', c2:'#D4B080', glow:'rgba(255,208,155,.3)' },
-  cool_intense_dynamic_clear:   { name:'서늘한 별빛',   c1:'#80C0FF', c2:'#3858E0', glow:'rgba(95,155,255,.42)' },
-  cool_intense_dynamic_diffuse: { name:'차가운 파도',   c1:'#60A0E0', c2:'#3878C0', glow:'rgba(75,135,220,.4)' },
-  cool_intense_still_clear:     { name:'푸른 달의 빛',  c1:'#A0D0FF', c2:'#5878D0', glow:'rgba(135,185,255,.4)' },
-  cool_intense_still_diffuse:   { name:'수정빛 서리',   c1:'#B0D8F0', c2:'#6888B8', glow:'rgba(155,198,235,.35)' },
-  cool_gentle_dynamic_clear:    { name:'청량한 바람',   c1:'#A0E8D0', c2:'#58A898', glow:'rgba(115,218,185,.4)' },
-  cool_gentle_dynamic_diffuse:  { name:'안개 속 달빛',  c1:'#C0E0F0', c2:'#78A8C8', glow:'rgba(155,205,235,.35)' },
-  cool_gentle_still_clear:      { name:'고요한 달빛',   c1:'#D0E8FF', c2:'#88B0D8', glow:'rgba(175,218,255,.4)' },
-  cool_gentle_still_diffuse:    { name:'새벽 이슬빛',   c1:'#D8ECF8', c2:'#98BCCE', glow:'rgba(195,228,245,.3)' },
+  warm_intense_dynamic_clear:   { name:'따스한 새벽빛', c1:'#FFB830', c2:'#FF6A48', glow:'rgba(255,150,60,.45)',  desc:'열정과 선명함이 공존하는 빛이에요. 강하게 타오르면서도 방향이 뚜렷하고, 주변을 따뜻하게 물들이는 힘이 있어요.' },
+  warm_intense_dynamic_diffuse: { name:'노을빛 안개',   c1:'#FFA040', c2:'#E04878', glow:'rgba(255,110,80,.4)',   desc:'감정이 넓게 퍼지며 세상을 물들여요. 강렬하지만 부드럽게 번지는 노을처럼, 많은 것을 품으려는 마음이 깊어요.' },
+  warm_intense_still_clear:     { name:'황금빛 고요',   c1:'#FFD040', c2:'#C85C3A', glow:'rgba(255,195,55,.4)',   desc:'고요한 힘 속에 뚜렷한 의지가 담겨 있어요. 흔들리지 않으면서도 따뜻하게 빛나는 안정적인 존재감이에요.' },
+  warm_intense_still_diffuse:   { name:'불꽃 잔향',     c1:'#FFC060', c2:'#D06858', glow:'rgba(255,170,75,.35)',  desc:'한번 피어오른 감정의 온기가 오래도록 남아요. 조용하지만 내면 깊은 곳에서 열기가 계속 이어지는 유형이에요.' },
+  warm_gentle_dynamic_clear:    { name:'봄볕 속 춤',    c1:'#FFE080', c2:'#F08850', glow:'rgba(255,215,95,.4)',   desc:'가볍고 생동감 있게 움직이며 주변을 밝혀요. 부드러운 따뜻함으로 사람들을 편안하게 만드는 존재예요.' },
+  warm_gentle_dynamic_diffuse:  { name:'꿀빛 저녁',     c1:'#FFD090', c2:'#E09860', glow:'rgba(255,192,110,.35)', desc:'일상의 작은 온기를 넓게 나누는 유형이에요. 자연스럽게 스며들며 주변을 포근하게 감싸는 힘이 있어요.' },
+  warm_gentle_still_clear:      { name:'온화한 햇살',   c1:'#FFE8A0', c2:'#D4A060', glow:'rgba(255,218,130,.4)',  desc:'고요하고 선명하게 빛나는 온기예요. 억지스럽지 않게 그냥 곁에 있는 것만으로 사람들을 따뜻하게 해요.' },
+  warm_gentle_still_diffuse:    { name:'따뜻한 이슬',   c1:'#FFE8B8', c2:'#D4B080', glow:'rgba(255,208,155,.3)',  desc:'가장 부드럽고 조용한 온기예요. 이슬처럼 섬세하게 스며들며, 말없이도 마음을 적셔주는 사람이에요.' },
+  cool_intense_dynamic_clear:   { name:'서늘한 별빛',   c1:'#80C0FF', c2:'#3858E0', glow:'rgba(95,155,255,.42)',  desc:'냉철하고 선명한 시선으로 세상을 꿰뚫어요. 강한 에너지와 날카로운 직관이 공존하는 유형이에요.' },
+  cool_intense_dynamic_diffuse: { name:'차가운 파도',   c1:'#60A0E0', c2:'#3878C0', glow:'rgba(75,135,220,.4)',   desc:'강한 감정이 넓게 휘몰아치는 유형이에요. 흐름을 만들고 변화를 이끄는 에너지가 깊은 곳에서 솟아나요.' },
+  cool_intense_still_clear:     { name:'푸른 달의 빛',  c1:'#A0D0FF', c2:'#5878D0', glow:'rgba(135,185,255,.4)',  desc:'고요하고 선명한 깊이가 있어요. 드러내지 않지만 그 빛은 멀리서도 느껴지는 흔들리지 않는 존재예요.' },
+  cool_intense_still_diffuse:   { name:'수정빛 서리',   c1:'#B0D8F0', c2:'#6888B8', glow:'rgba(155,198,235,.35)', desc:'차갑지만 섬세하게 퍼지는 빛이에요. 감정을 겉으로 드러내기보다 내면에서 조용히 쌓아가는 유형이에요.' },
+  cool_gentle_dynamic_clear:    { name:'청량한 바람',   c1:'#A0E8D0', c2:'#58A898', glow:'rgba(115,218,185,.4)',  desc:'가볍고 산뜻하게 움직이며 주변을 정화해요. 복잡한 것을 단순하게 만드는 깨끗한 에너지를 가졌어요.' },
+  cool_gentle_dynamic_diffuse:  { name:'안개 속 달빛',  c1:'#C0E0F0', c2:'#78A8C8', glow:'rgba(155,205,235,.35)', desc:'부드럽게 퍼지며 경계를 흐리는 빛이에요. 섣불리 단정 짓지 않고 여러 가능성을 열어두는 사람이에요.' },
+  cool_gentle_still_clear:      { name:'고요한 달빛',   c1:'#D0E8FF', c2:'#88B0D8', glow:'rgba(175,218,255,.4)',  desc:'잔잔하고 선명하게 세상을 비춰요. 말이 적어도 존재 자체로 안정감을 주는 깊고 맑은 유형이에요.' },
+  cool_gentle_still_diffuse:    { name:'새벽 이슬빛',   c1:'#D8ECF8', c2:'#98BCCE', glow:'rgba(195,228,245,.3)',  desc:'가장 조용하고 섬세한 빛이에요. 새벽처럼 고요하게 스며들며, 작은 것들의 아름다움을 알아보는 사람이에요.' },
 };
 
 /* 24 events — Erikson 8 stages × 3, 2030 청년 일상 시나리오 */
@@ -1004,7 +1021,11 @@ function addXP(n) {
   while (G.lv < 8) {
     if (G.xp >= STAGES[G.lv-1].need) {
       G.lv++;
-      setTimeout(() => toast(`✨ ${STAGES[G.lv-1].name}(으)로 성장했어요!`), 400);
+      const reachedLv = G.lv;
+      setTimeout(() => {
+        toast(`✨ ${STAGES[reachedLv-1].name}(으)로 성장했어요!`);
+        if (reachedLv === 8) setTimeout(openLight, 1200);
+      }, 400);
     } else break;
   }
 }
@@ -1025,6 +1046,9 @@ function updateRoom() {
   document.getElementById('stage-desc').textContent = st.desc;
 
   renderChar();
+
+  const btnLight = document.getElementById('btn-light');
+  if (btnLight) btnLight.style.display = G.lv >= 8 ? '' : 'none';
 
   const recent = G.emotions.slice(-8).reverse();
   const chips  = document.getElementById('chips');
@@ -1215,6 +1239,58 @@ function confirmDecor() {
 function openDiary() {
   renderDiary();
   document.getElementById('modal-diary').classList.remove('hidden');
+}
+function openLight() {
+  renderLight();
+  document.getElementById('modal-light').classList.remove('hidden');
+}
+function renderLight() {
+  const t = G.type && TYPES[G.type] ? TYPES[G.type] : null;
+  const profLabels = { w:'따뜻함', c:'차분함', i:'강렬함', g:'온화함', d:'역동성', s:'고요함', cl:'선명함', df:'확산됨' };
+  const profMax = Math.max(...Object.values(G.profile), 1);
+
+  let barsHtml = Object.entries(G.profile).map(([k, v]) => `
+    <div class="light-bar-row">
+      <span class="light-bar-label">${profLabels[k]}</span>
+      <div class="light-bar-track"><div class="light-bar-fill" style="width:${Math.round(v/profMax*100)}%;${t?`background:linear-gradient(90deg,${t.c1},${t.c2})`:''}" ></div></div>
+      <span class="light-bar-val">${v}</span>
+    </div>`).join('');
+
+  const eventDiary = G.diary.filter(e => e.type === 'event');
+  let recordHtml = '';
+  STAGES.filter(st => st.lv < 8).forEach((st, idx) => {
+    const stageNum = idx + 1;
+    const entries = eventDiary.filter(e => {
+      if (e.stage != null) return e.stage === stageNum;
+      const ev = EVENTS.find(ev => ev.title === e.title);
+      return ev && ev.stage === stageNum;
+    });
+    recordHtml += `<div class="record-stage">
+      <div class="record-stage-title">${st.icon} ${st.label}</div>`;
+    if (!entries.length) {
+      recordHtml += `<div class="record-empty">아직 탐험 전이에요 🌿</div>`;
+    } else {
+      entries.forEach(e => {
+        recordHtml += `<div class="record-event">
+          <div class="record-event-title">${e.title}</div>
+          <div class="record-event-choice">→ "${e.choice}"</div>
+        </div>`;
+      });
+    }
+    recordHtml += `</div>`;
+  });
+
+  document.getElementById('light-content').innerHTML = `
+    <div class="light-orb" style="background:${t ? `linear-gradient(135deg,${t.c1},${t.c2})` : 'var(--beige)'};box-shadow:0 0 28px ${t ? t.glow : 'transparent'};"></div>
+    <div class="light-type-name" style="background:${t ? `linear-gradient(90deg,${t.c1},${t.c2})` : 'var(--brown)'};-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">
+      ${t ? t.name : '나만의 빛'}
+    </div>
+    <div class="light-type-desc">${t ? t.desc : '감정을 기록하며 빛 유형이 결정돼요.'}</div>
+    <div class="light-section-title">감정 성향 프로파일</div>
+    ${barsHtml}
+    <div class="light-section-title">나의 이야기 기록</div>
+    ${recordHtml}
+  `;
 }
 function openRecord() {
   renderRecord();
